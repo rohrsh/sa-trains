@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Belair Line Freight</title>
+  <style>
+    :root {
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --text: #1e293b;
+      --muted: #64748b;
+      --primary: #2563eb;
+      --primary-bg: #dbeafe;
+      --large: #b91c1c;
+      --large-bg: #fee2e2;
+      --med: #1d4ed8;
+      --med-bg: #dbeafe;
+      --small-bg: #f3f4f6;
+      --green: #15803d;
+      --green-bg: #dcfce7;
+      --amber: #b45309;
+      --amber-bg: #fef3c7;
+      --red: #dc2626;
+      --passed: #94a3b8;
+      --radius: 12px;
+      --shadow: 0 1px 4px rgba(0,0,0,.08);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Header ─────────────────────────────── */
+    header {
+      background: var(--primary);
+      color: #fff;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .hdr-left { display: flex; align-items: center; gap: 10px; }
+
+    .station-btn {
+      background: rgba(255,255,255,.18);
+      border: 1px solid rgba(255,255,255,.35);
+      color: #fff;
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: .88rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .station-btn .chevron { font-size: .7rem; opacity: .8; }
+
+    #clock {
+      font-size: 1.25rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ── Station picker overlay ─────────────── */
+    #picker-overlay {
+      position: fixed; inset: 0;
+      background: rgba(15,23,42,.6);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 100;
+      padding: 20px;
+    }
+
+    #picker-overlay.hidden { display: none; }
+
+    .picker-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 24px 20px;
+      width: 100%;
+      max-width: 340px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.3);
+    }
+
+    .picker-card h2 { font-size: 1.1rem; margin-bottom: 6px; }
+    .picker-card p  { font-size: .83rem; color: var(--muted); margin-bottom: 18px; }
+
+    .station-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .station-option {
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 13px 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: .9rem;
+      font-weight: 600;
+      transition: all .15s;
+    }
+
+    .station-option:hover { border-color: var(--primary); background: var(--primary-bg); }
+    .station-option .meta { font-size: .72rem; color: var(--muted); font-weight: 400; }
+
+    /* ── Disclaimer ─────────────────────────── */
+    #disc {
+      font-size: .72rem;
+      color: #713f12;
+      background: #fef9c3;
+      border-bottom: 1px solid #fde047;
+      padding: 5px 14px;
+      line-height: 1.4;
+    }
+
+    /* ── Main ───────────────────────────────── */
+    main { max-width: 520px; margin: 0 auto; padding: 14px; }
+
+    /* ── Hero next-train card ───────────────── */
+    #hero {
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      margin-bottom: 12px;
+    }
+
+    .hero-label {
+      font-size: .68rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 8px;
+    }
+
+    .hero-time {
+      font-size: 3rem;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -.02em;
+      line-height: 1;
+      color: var(--text);
+    }
+
+    .hero-time.no-train { font-size: 1.2rem; color: var(--muted); }
+
+    .hero-away {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    .hero-away.imminent { color: var(--red); }
+    .hero-away.upcoming { color: var(--green); }
+    .hero-away.later    { color: var(--muted); }
+
+    .hero-meta {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      font-size: .72rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 20px;
+    }
+
+    .tag-dir-in  { background: #ecfdf5; color: #065f46; }
+    .tag-dir-out { background: #eff6ff; color: #1e40af; }
+    .tag-large   { background: var(--large-bg); color: var(--large); }
+    .tag-med     { background: var(--med-bg);   color: var(--med);   }
+    .tag-small   { background: var(--small-bg); color: var(--muted); }
+
+    /* ── Day selector ───────────────────────── */
+    .day-bar {
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      margin-bottom: 12px;
+      scrollbar-width: none;
+    }
+
+    .day-bar::-webkit-scrollbar { display: none; }
+
+    button.day-pill {
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--muted);
+      font-size: .75rem;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+
+    button.day-pill.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    /* ── Train list ─────────────────────────── */
+    .section-label {
+      font-size: .68rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin: 4px 0 8px;
+    }
+
+    #train-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .train-row {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 11px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: var(--shadow);
+    }
+
+    .train-row.passed { opacity: .38; }
+    .train-row.imminent { border-color: #fca5a5; background: #fff5f5; }
+    .train-row.upcoming { border-color: #86efac; background: #f0fdf4; }
+
+    .train-time {
+      font-size: 1.05rem;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      width: 50px;
+      flex-shrink: 0;
+    }
+
+    .train-time.next-time { color: var(--primary); }
+
+    .train-body { flex: 1; min-width: 0; }
+
+    .train-id-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .train-id { font-weight: 800; font-family: monospace; font-size: .88rem; }
+
+    .away-chip {
+      font-size: .7rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 20px;
+    }
+
+    .away-chip.imminent { background: var(--large-bg); color: var(--large); }
+    .away-chip.upcoming { background: var(--green-bg); color: var(--green); }
+    .away-chip.passed   { background: var(--small-bg); color: var(--passed); }
+
+    .train-sub { font-size: .73rem; color: var(--muted); margin-top: 2px; }
+
+    .train-size { flex-shrink: 0; }
+
+    /* ── Full timetable toggle ──────────────── */
+    #full-toggle {
+      display: block;
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px;
+      font-size: .83rem;
+      font-weight: 700;
+      color: var(--primary);
+      cursor: pointer;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    #full-section { display: none; }
+    #full-section.open { display: block; }
+
+    .table-wrap {
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      overflow-x: auto;
+    }
+
+    table { border-collapse: collapse; width: 100%; min-width: 500px; font-size: .78rem; }
+    th {
+      background: #f8fafc; padding: 8px 10px; text-align: left;
+      font-size: .67rem; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .06em;
+      border-bottom: 1px solid var(--border); white-space: nowrap;
+    }
+    td { padding: 9px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    tr:last-child td { border-bottom: none; }
+    tr.passed td { opacity: .35; }
+
+    /* ── Upload ─────────────────────────────── */
+    details#upload {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      margin-bottom: 16px;
+    }
+
+    details#upload summary {
+      cursor: pointer; font-size: .8rem; font-weight: 700; color: var(--muted);
+    }
+
+    details#upload summary:hover { color: var(--primary); }
+
+    .upload-inner { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+    button.action {
+      background: var(--primary); color: #fff; border: none; border-radius: 6px;
+      padding: 6px 14px; font-weight: 700; font-size: .8rem; cursor: pointer;
+    }
+
+    button.action:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* ── Footer ─────────────────────────────── */
+    footer { text-align: center; font-size: .7rem; color: var(--muted); padding: 20px 14px; }
+    footer a { color: var(--primary); }
+
+    @media (max-width: 420px) {
+      .hero-time { font-size: 2.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Station picker overlay -->
+<div id="picker-overlay">
+  <div class="picker-card">
+    <h2>Pick your station</h2>
+    <p>Which station are you watching from? You can change this any time.</p>
+    <div class="station-list" id="station-list">
+      <!-- filled by JS -->
+    </div>
+  </div>
+</div>
+
+<header>
+  <div class="hdr-left">
+    <button class="station-btn" onclick="openPicker()">
+      <span id="hdr-station">—</span>
+      <span class="chevron">▾</span>
+    </button>
+    <span id="mtp-tag" style="font-size:.68rem;opacity:.75;white-space:nowrap"></span>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px">
+    <button id="refresh-btn" title="Fetch latest ARTC MTP" onclick="triggerRefresh()" style="background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:6px;padding:4px 9px;font-size:.72rem;font-weight:700;cursor:pointer">↻ Refresh</button>
+    <div id="clock">--:--</div>
+  </div>
+</header>
+
+<div id="disc" style="display:none"></div>
+
+<main>
+
+  <!-- Day selector -->
+  <div class="day-bar" id="day-bar">
+    <button class="day-pill" data-day="MON">Mon</button>
+    <button class="day-pill" data-day="TUE">Tue</button>
+    <button class="day-pill" data-day="WED">Wed</button>
+    <button class="day-pill" data-day="THU">Thu</button>
+    <button class="day-pill" data-day="FRI">Fri</button>
+    <button class="day-pill" data-day="SAT">Sat</button>
+    <button class="day-pill" data-day="SUN">Sun</button>
+  </div>
+
+  <!-- Hero: next train -->
+  <div id="hero">
+    <div class="hero-label" id="hero-label">Next train at —</div>
+    <div class="hero-time no-train" id="hero-time">—</div>
+    <div class="hero-away" id="hero-away"></div>
+    <div class="hero-meta" id="hero-meta"></div>
+  </div>
+
+  <!-- Train list -->
+  <div class="section-label" id="list-label">Today at —</div>
+  <div id="train-list"></div>
+
+  <!-- Full timetable -->
+  <button id="full-toggle" onclick="toggleFull()">Show full timetable ▾</button>
+  <div id="full-section">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Train</th><th>Dir</th><th>Size</th><th>Type</th>
+            <th id="th-s0"></th><th id="th-s1"></th><th id="th-s2"></th>
+            <th id="th-s3"></th><th id="th-s4"></th>
+            <th>Days</th>
+          </tr>
+        </thead>
+        <tbody id="full-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PDF upload -->
+  <details id="upload">
+    <summary>Update from ARTC MTP PDFs</summary>
+    <div class="upload-inner">
+      <p style="font-size:.76rem;color:var(--muted);width:100%">
+        Download <b>MTP_…_VIC-SA-300.pdf</b> and <b>MTP_…_VIC-SA-350.pdf</b>
+        from <a href="https://www.artc.com.au/customers/operations/mtp/" target="_blank">artc.com.au/customers/operations/mtp/</a>
+        and upload to replace the current data.
+      </p>
+      <input type="file" id="pdf-input" accept=".pdf" multiple />
+      <button class="action" onclick="uploadPDFs()">Parse &amp; Load</button>
+      <span id="upload-status" style="font-size:.78rem;color:var(--muted)"></span>
+    </div>
+  </details>
+
+</main>
+
+<footer>
+  Data from the <a href="https://www.artc.com.au/customers/operations/mtp/" target="_blank">ARTC Master Train Plan</a>.
+  Scheduled paths only — trains can run late, early, or be cancelled.
+  <br>Do not trespass on the rail corridor.
+</footer>
+
+<script>
+const STATION_META = {
+  'Murray Bridge': 'Base of Hills, eastern approach',
+  'Balhannah':     'Mt Barker area, mid-Hills',
+  'Mt Lofty':      'Summit — trains work hardest here',
+  'Belair':        'Popular viewing point, upper Hills',
+  'Keswick':       'Adelaide terminal',
+};
+
+let selectedStation = localStorage.getItem('belair_station') || null;
+let selectedDay = null;  // null = today
+let stationsOrder = [];
+let nowMin = 0;
+let allTrains = [];
+
+// ── Clock ──────────────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2, '0');
+  const mm = String(now.getMinutes()).padStart(2, '0');
+  document.getElementById('clock').textContent = hh + ':' + mm;
+  nowMin = now.getHours() * 60 + now.getMinutes();
+}
+setInterval(updateClock, 10000);
+updateClock();
+
+// ── Station picker ─────────────────────────────────────────────────
+function buildPicker(stations) {
+  const list = document.getElementById('station-list');
+  list.innerHTML = '';
+  stations.forEach(s => {
+    const btn = document.createElement('button');
+    btn.className = 'station-option';
+    btn.innerHTML = `
+      <span>${s}</span>
+      <span class="meta">${STATION_META[s] || ''}</span>
+    `;
+    btn.onclick = () => selectStation(s);
+    list.appendChild(btn);
+  });
+}
+
+function openPicker() {
+  document.getElementById('picker-overlay').classList.remove('hidden');
+}
+
+function selectStation(name) {
+  selectedStation = name;
+  localStorage.setItem('belair_station', name);
+  document.getElementById('picker-overlay').classList.add('hidden');
+  document.getElementById('hdr-station').textContent = name;
+  renderAll();
+}
+
+// ── Data fetch ─────────────────────────────────────────────────────
+async function refresh() {
+  const params = new URLSearchParams({ direction: 'both' });
+  if (selectedDay) params.set('day', selectedDay);
+  try {
+    const res = await fetch('/api/trains?' + params);
+    const data = await res.json();
+    stationsOrder = data.stations_order || [];
+    allTrains = data.trains || [];
+
+    // Sync day buttons
+    if (!selectedDay) {
+      document.querySelectorAll('.day-pill').forEach(b =>
+        b.classList.toggle('active', b.dataset.day === data.current_day)
+      );
+    }
+
+    // Disclaimer
+    const disc = document.getElementById('disc');
+    if (data.disclaimer) { disc.textContent = '⚠ ' + data.disclaimer; disc.style.display = ''; }
+
+    // MTP effective date tag in header
+    const tag = document.getElementById('mtp-tag');
+    if (data.mtp_effective) tag.textContent = 'MTP ' + data.mtp_effective;
+
+    // Build picker list from stations in data
+    buildPicker(stationsOrder);
+
+    // Show picker if no station chosen yet
+    if (!selectedStation) {
+      openPicker();
+    } else {
+      document.getElementById('picker-overlay').classList.add('hidden');
+    }
+
+    document.getElementById('hdr-station').textContent = selectedStation || '—';
+    renderAll();
+  } catch(e) { console.error(e); }
+}
+
+// ── Render ─────────────────────────────────────────────────────────
+function renderAll() {
+  if (!selectedStation) return;
+  document.getElementById('hero-label').textContent = 'Next train at ' + selectedStation;
+  document.getElementById('list-label').textContent = 'Today at ' + selectedStation;
+
+  // Collect trains that have a time at this station, sorted by that time
+  const entries = [];
+  for (const t of allTrains) {
+    const raw = t.stations?.[selectedStation];
+    if (!raw) continue;
+    const tMin = parseTimeStr(raw);
+    if (tMin === null) continue;
+    entries.push({ train: t, tMin, raw });
+  }
+  entries.sort((a, b) => a.tMin - b.tMin);
+
+  renderHero(entries);
+  renderList(entries);
+  renderFullTable();
+}
+
+function renderHero(entries) {
+  const hero = document.getElementById('hero');
+  const timeEl = document.getElementById('hero-time');
+  const awayEl = document.getElementById('hero-away');
+  const metaEl = document.getElementById('hero-meta');
+
+  // Find first upcoming entry
+  const next = entries.find(e => e.tMin >= nowMin - 5);
+
+  if (!next) {
+    timeEl.className = 'hero-time no-train';
+    timeEl.textContent = 'No more trains today';
+    awayEl.textContent = '';
+    metaEl.innerHTML = '';
+    return;
+  }
+
+  timeEl.className = 'hero-time';
+  timeEl.textContent = displayTime(next.raw);
+
+  const diff = next.tMin - nowMin;
+  let awayText, awayClass;
+  if (diff <= 0)       { awayText = 'Now / arriving'; awayClass = 'imminent'; }
+  else if (diff < 60)  { awayText = `in ${diff} min`;  awayClass = diff < 30 ? 'imminent' : 'upcoming'; }
+  else                 { const h = Math.floor(diff/60), m = diff%60; awayText = `in ${h}h ${m > 0 ? m+'m' : ''}`; awayClass = 'later'; }
+
+  awayEl.className = 'hero-away ' + awayClass;
+  awayEl.textContent = awayText;
+
+  const t = next.train;
+  const dir = t.direction === 'inbound' ? '→ Adelaide' : '← Melbourne';
+  metaEl.innerHTML = `
+    <span class="tag tag-dir-${t.direction === 'inbound' ? 'in' : 'out'}">${dir}</span>
+    ${sizeTag(t.length_m)}
+    <span style="font-size:.82rem;color:var(--muted)">${t.operator} · ${t.commodity} · ${t.train_id}</span>
+  `;
+}
+
+function renderList(entries) {
+  const list = document.getElementById('train-list');
+  list.innerHTML = '';
+
+  if (!entries.length) {
+    list.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px;font-size:.85rem">No trains today at this station</div>';
+    return;
+  }
+
+  for (const { train: t, tMin, raw } of entries) {
+    const diff = tMin - nowMin;
+    let status, awayText;
+    if (diff < -30)        { status = 'passed'; awayText = 'passed'; }
+    else if (diff <= 0)    { status = 'imminent'; awayText = 'now'; }
+    else if (diff < 30)    { status = 'imminent'; awayText = `${diff}m`; }
+    else if (diff < 120)   { status = 'upcoming'; awayText = `${diff}m`; }
+    else {
+      const h = Math.floor(diff/60), m = diff%60;
+      status = 'later'; awayText = `${h}h${m > 0 ? m+'m' : ''}`;
+    }
+
+    const dir = t.direction === 'inbound' ? '→ Adl' : '← Mlb';
+    const daysStr = (t.days||[]).join(' ');
+
+    const row = document.createElement('div');
+    row.className = `train-row ${status}`;
+    row.innerHTML = `
+      <div class="train-time ${status === 'upcoming' || status === 'imminent' ? 'next-time' : ''}">${displayTime(raw)}</div>
+      <div class="train-body">
+        <div class="train-id-row">
+          <span class="train-id">${t.train_id}</span>
+          <span style="font-size:.8rem;color:var(--muted)">${dir}</span>
+          ${status !== 'later' && status !== 'passed' ? `<span class="away-chip ${status}">${awayText}</span>` : ''}
+        </div>
+        <div class="train-sub">${t.operator} · ${t.commodity} · runs ${daysStr}</div>
+      </div>
+      <div class="train-size">${sizeTag(t.length_m)}</div>
+    `;
+    list.appendChild(row);
+  }
+}
+
+function renderFullTable() {
+  // Update station column headers
+  stationsOrder.forEach((s, i) => {
+    const th = document.getElementById('th-s' + i);
+    if (th) th.textContent = s.replace('Murray Bridge', 'Murray Br.');
+  });
+
+  const tbody = document.getElementById('full-tbody');
+  tbody.innerHTML = '';
+
+  const sorted = [...allTrains].sort((a, b) => {
+    const ta = firstTime(a.stations);
+    const tb = firstTime(b.stations);
+    return ta - tb;
+  });
+
+  for (const t of sorted) {
+    const firstT = firstTime(t.stations);
+    const passed = firstT < nowMin - 45;
+    const dir = t.direction === 'inbound' ? '→ Adl' : '← Mlb';
+    const daysStr = (t.days||[]).map(d => d[0]+d[1].toLowerCase()).join(' ');
+
+    const tr = document.createElement('tr');
+    tr.className = passed ? 'passed' : '';
+    tr.innerHTML = `
+      <td style="font-weight:800;font-family:monospace">${t.train_id}</td>
+      <td style="font-size:.75rem;color:var(--muted)">${dir}</td>
+      <td>${sizeTag(t.length_m)}</td>
+      <td>${t.commodity||''}</td>
+    `;
+
+    stationsOrder.forEach(s => {
+      const td = document.createElement('td');
+      const raw = t.stations?.[s];
+      if (!raw) {
+        td.style.color = 'var(--border)'; td.textContent = '–';
+      } else {
+        td.style.fontVariantNumeric = 'tabular-nums';
+        td.style.fontWeight = '600';
+        td.textContent = displayTime(raw);
+        if (s === selectedStation) {
+          td.style.color = 'var(--primary)';
+          td.style.fontWeight = '900';
+        }
+      }
+      tr.appendChild(td);
+    });
+
+    const dayTd = document.createElement('td');
+    dayTd.style.color = 'var(--muted)';
+    dayTd.style.fontSize = '.7rem';
+    dayTd.textContent = daysStr;
+    tr.appendChild(dayTd);
+
+    tbody.appendChild(tr);
+  }
+}
+
+// ── Helpers ────────────────────────────────────────────────────────
+function parseTimeStr(s) {
+  if (!s || s === '-') return null;
+  const nd = s.startsWith('+');
+  const clean = s.replace(/^\+/, '');
+  const m = clean.match(/^(\d{1,2}):(\d{2})$/);
+  if (!m) return null;
+  return parseInt(m[1]) * 60 + parseInt(m[2]) + (nd ? 1440 : 0);
+}
+
+function displayTime(s) {
+  if (!s) return '–';
+  if (s.startsWith('+')) return s.slice(1) + '⁺';
+  return s;
+}
+
+function firstTime(stations) {
+  const vals = Object.values(stations || {}).map(parseTimeStr).filter(v => v !== null);
+  return vals.length ? Math.min(...vals) : 9999;
+}
+
+function sizeTag(len) {
+  if (!len) return '';
+  if (len >= 1500) return `<span class="tag tag-large">${len}m</span>`;
+  if (len >= 800)  return `<span class="tag tag-med">${len}m</span>`;
+  return `<span class="tag" style="background:var(--small-bg);color:var(--muted)">${len}m</span>`;
+}
+
+function toggleFull() {
+  const sec = document.getElementById('full-section');
+  const btn = document.getElementById('full-toggle');
+  const open = sec.classList.toggle('open');
+  btn.textContent = open ? 'Hide full timetable ▴' : 'Show full timetable ▾';
+}
+
+// ── Day pills ──────────────────────────────────────────────────────
+document.getElementById('day-bar').addEventListener('click', e => {
+  const btn = e.target.closest('.day-pill');
+  if (!btn) return;
+  selectedDay = btn.dataset.day;
+  document.querySelectorAll('.day-pill').forEach(b => b.classList.toggle('active', b === btn));
+  refresh();
+});
+
+// ── Upload ─────────────────────────────────────────────────────────
+async function uploadPDFs() {
+  const input = document.getElementById('pdf-input');
+  const status = document.getElementById('upload-status');
+  const btn = document.querySelector('#upload button.action');
+  if (!input.files.length) { status.textContent = 'Select PDFs first.'; return; }
+  btn.disabled = true; status.textContent = 'Parsing…';
+  const form = new FormData();
+  for (const f of input.files) form.append('pdfs', f);
+  try {
+    const res = await fetch('/api/upload', { method: 'POST', body: form });
+    const data = await res.json();
+    if (data.error) { status.textContent = '✗ ' + data.error; }
+    else { status.textContent = `✓ Loaded ${data.trains_loaded} trains`; refresh(); }
+  } catch { status.textContent = '✗ Network error'; }
+  finally { btn.disabled = false; }
+}
+
+// ── Refresh from ARTC ──────────────────────────────────────────────
+async function triggerRefresh() {
+  const btn = document.getElementById('refresh-btn');
+  const tag = document.getElementById('mtp-tag');
+  btn.textContent = '↻ Fetching…';
+  btn.disabled = true;
+  try {
+    const res = await fetch('/api/refresh', { method: 'POST' });
+    const data = await res.json();
+    if (data.error) {
+      alert('Refresh failed: ' + data.error);
+    } else {
+      tag.textContent = 'MTP ' + (data.mtp_effective || '');
+      await refresh();
+    }
+  } catch (e) {
+    alert('Network error during refresh');
+  } finally {
+    btn.textContent = '↻ Refresh';
+    btn.disabled = false;
+  }
+}
+
+// ── Boot ───────────────────────────────────────────────────────────
+refresh();
+setInterval(() => { updateClock(); refresh(); }, 60000);
+</script>
+</body>
+</html>

@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SA Trains · Adelaide Hills freight</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <style>
+    :root {
+      --bg: #f1f5f9; --card: #ffffff; --border: #e2e8f0; --text: #1e293b;
+      --muted: #64748b; --primary: #2563eb; --primary-bg: #dbeafe;
+      --large: #b91c1c; --large-bg: #fee2e2; --med: #1d4ed8; --med-bg: #dbeafe;
+      --small-bg: #f3f4f6; --green: #15803d; --green-bg: #dcfce7;
+      --amber: #b45309; --amber-bg: #fef3c7; --red: #dc2626; --passed: #94a3b8;
+      --radius: 12px; --shadow: 0 1px 4px rgba(0,0,0,.08);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    header { background: var(--primary); color: #fff; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; }
+    .hdr-left { display: flex; align-items: center; gap: 10px; }
+    .station-btn { background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.35); color: #fff; border-radius: 8px; padding: 6px 12px; font-size: .88rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+    .station-btn .chevron { font-size: .7rem; opacity: .8; }
+    #clock { font-size: 1.25rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+    #picker-overlay { position: fixed; inset: 0; background: rgba(15,23,42,.6); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
+    #picker-overlay.hidden { display: none; }
+    .picker-card { background: var(--card); border-radius: var(--radius); padding: 24px 20px; width: 100%; max-width: 340px; box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+    .picker-card h2 { font-size: 1.1rem; margin-bottom: 6px; }
+    .picker-card p  { font-size: .83rem; color: var(--muted); margin-bottom: 18px; }
+    .station-list { display: flex; flex-direction: column; gap: 8px; }
+    .station-option { background: var(--bg); border: 2px solid var(--border); border-radius: 10px; padding: 13px 16px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; font-size: .9rem; font-weight: 600; transition: all .15s; }
+    .station-option:hover { border-color: var(--primary); background: var(--primary-bg); }
+    .station-option .meta { font-size: .72rem; color: var(--muted); font-weight: 400; }
+
+    #disc { font-size: .72rem; color: #713f12; background: #fef9c3; border-bottom: 1px solid #fde047; padding: 5px 14px; line-height: 1.4; }
+    main { max-width: 520px; margin: 0 auto; padding: 14px; }
+    .day-bar { display: flex; gap: 4px; overflow-x: auto; padding-bottom: 2px; margin-bottom: 8px; scrollbar-width: none; }
+    .day-bar::-webkit-scrollbar { display: none; }
+    button.day-pill { flex-shrink: 0; border: 1px solid var(--border); background: var(--card); color: var(--muted); font-size: .75rem; font-weight: 700; padding: 5px 10px; border-radius: 20px; cursor: pointer; }
+    button.day-pill.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+    .filter-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; align-items: center; }
+    .filter-group { display: flex; gap: 3px; background: var(--bg); border: 1px solid var(--border); border-radius: 20px; padding: 3px; }
+    button.filt { border: none; background: transparent; color: var(--muted); font-size: .72rem; font-weight: 700; padding: 4px 10px; border-radius: 16px; cursor: pointer; white-space: nowrap; transition: all .12s; }
+    button.filt.active { background: var(--card); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+    button.filt.active.dir-in        { color: #065f46; }
+    button.filt.active.dir-out       { color: #1e40af; }
+    button.filt.active.type-intermodal { color: var(--primary); }
+    button.filt.active.type-steel      { color: #7c3aed; }
+    button.filt.active.type-passenger  { color: #b45309; }
+    .filter-label { font-size: .65rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; padding: 0 4px; align-self: center; }
+
+    #hero { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); padding: 18px; box-shadow: var(--shadow); margin-bottom: 12px; }
+    .hero-label { font-size: .68rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 8px; }
+    .hero-time { font-size: 3rem; font-weight: 900; font-variant-numeric: tabular-nums; letter-spacing: -.02em; line-height: 1; }
+    .hero-time.no-train { font-size: 1.2rem; color: var(--muted); }
+    .hero-away { font-size: 1rem; font-weight: 700; margin-top: 4px; }
+    .hero-away.imminent { color: var(--red); } .hero-away.upcoming { color: var(--green); } .hero-away.later { color: var(--muted); }
+    .hero-meta { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+
+    .tag { display: inline-flex; align-items: center; font-size: .72rem; font-weight: 700; padding: 3px 8px; border-radius: 20px; }
+    .tag-dir-in  { background: #ecfdf5; color: #065f46; }
+    .tag-dir-out { background: #eff6ff; color: #1e40af; }
+    .tag-large   { background: var(--large-bg); color: var(--large); }
+    .tag-med     { background: var(--med-bg);   color: var(--med);   }
+    .tag-small   { background: var(--small-bg); color: var(--muted); }
+
+    .section-label { font-size: .68rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin: 4px 0 8px; }
+    #train-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+    .train-row { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 11px 14px; display: flex; align-items: center; gap: 10px; box-shadow: var(--shadow); cursor: pointer; flex-wrap: wrap; }
+    .train-row.passed { opacity: .38; }
+    .train-row.imminent { border-color: #fca5a5; background: #fff5f5; }
+    .train-row.upcoming { border-color: #86efac; background: #f0fdf4; }
+    .train-row-main { display: flex; align-items: center; gap: 10px; width: 100%; }
+    .train-detail { display: none; width: 100%; font-size: .76rem; color: var(--muted); line-height: 1.55; border-top: 1px solid var(--border); padding-top: 9px; margin-top: 2px; }
+    .train-detail.open { display: block; }
+    .decode-chip { display: inline-block; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 1px 7px; font-family: monospace; font-size: .8rem; font-weight: 700; color: var(--text); margin-right: 4px; }
+    .decode-arrow { color: var(--primary); font-weight: 700; margin: 0 4px; }
+    .detail-row { margin-bottom: 4px; }
+    .detail-key { font-weight: 700; color: var(--text); }
+    .train-time { font-size: 1.05rem; font-weight: 800; font-variant-numeric: tabular-nums; width: 50px; flex-shrink: 0; }
+    .train-time.next-time { color: var(--primary); }
+    .train-body { flex: 1; min-width: 0; }
+    .train-id-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .train-id { font-weight: 800; font-family: monospace; font-size: .88rem; }
+    .away-chip { font-size: .7rem; font-weight: 700; padding: 2px 7px; border-radius: 20px; }
+    .away-chip.imminent { background: var(--large-bg); color: var(--large); }
+    .away-chip.upcoming { background: var(--green-bg); color: var(--green); }
+    .train-sub { font-size: .73rem; color: var(--muted); margin-top: 2px; }
+
+    #full-toggle { display: block; width: 100%; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; font-size: .83rem; font-weight: 700; color: var(--primary); cursor: pointer; text-align: center; margin-bottom: 12px; }
+    #full-section { display: none; } #full-section.open { display: block; }
+    .table-wrap { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; min-width: 500px; font-size: .78rem; }
+    th { background: #f8fafc; padding: 8px 10px; text-align: left; font-size: .67rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    td { padding: 9px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    tr:last-child td { border-bottom: none; }
+    tr.passed td { opacity: .35; }
+
+    footer { text-align: center; font-size: .7rem; color: var(--muted); padding: 20px 14px; }
+    footer details { max-width: 540px; margin: 12px auto 0; text-align: left; }
+    footer details summary { cursor: pointer; text-align: center; font-weight: 600; }
+    footer details summary:hover { color: var(--ink); }
+    footer details .body { padding: 10px 4px 4px; line-height: 1.5; }
+    footer details table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: .68rem; }
+    footer details th, footer details td { padding: 4px 6px; text-align: left; border-bottom: 1px solid #eef0f3; }
+    footer details th { font-weight: 600; color: var(--ink); }
+    footer details td:last-child, footer details th:last-child { text-align: right; white-space: nowrap; }
+    footer a { color: var(--primary); }
+    #updated { font-size: .68rem; opacity: .75; white-space: nowrap; }
+
+    /* ── Map view ────────────────────────────────────────────── */
+    #map-overlay { position: fixed; inset: 0; background: #fff; z-index: 200; display: flex; flex-direction: column; }
+    #map-overlay.hidden { display: none; }
+    .map-header { background: var(--primary); color: #fff; padding: 10px 14px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .map-back { background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.35); color: #fff; border-radius: 8px; padding: 6px 12px; font-size: .82rem; font-weight: 600; cursor: pointer; }
+    .map-title { flex: 1; font-weight: 700; font-size: .95rem; min-width: 0; }
+    .map-zoom-toggle { display: flex; gap: 2px; background: rgba(255,255,255,.15); border-radius: 8px; padding: 3px; }
+    .zoom-btn { background: transparent; border: none; color: #fff; opacity: .7; padding: 4px 9px; font-size: .72rem; font-weight: 700; cursor: pointer; border-radius: 6px; }
+    .zoom-btn.active { background: rgba(255,255,255,.28); opacity: 1; }
+    #leaflet-map { flex: 1; min-height: 0; }
+    .map-footer { padding: 7px 14px; background: var(--card); border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: .72rem; color: var(--muted); gap: 8px; flex-wrap: wrap; }
+    .train-dot-marker { border: 2px solid #fff; border-radius: 50%; box-shadow: 0 1px 4px rgba(0,0,0,.4); }
+    .train-dot-marker.inbound  { background: #059669; }
+    .train-dot-marker.outbound { background: #1e40af; }
+    /* Station markers — deliberately neutral grey, kept clearly distinct
+       from the inbound (green) and outbound (navy) train dots. */
+    .station-dot { background: #d1d5db; border: 2px solid #fff; border-radius: 50%; box-shadow: 0 0 0 1px rgba(0,0,0,.15); }
+    .station-dot.timing { background: #6b7280; }
+    .leaflet-tooltip { font-size: .72rem; padding: 3px 7px; }
+
+    /* ── Detail view (#/train/X) ─────────────────────────────── */
+    #detail-view { max-width: 600px; margin: 0 auto; padding: 14px; }
+    #detail-view.hidden { display: none; }
+    .detail-back { background: transparent; border: none; color: var(--primary); font-size: .85rem; font-weight: 700; cursor: pointer; padding: 4px 0 14px; display: inline-flex; align-items: center; gap: 4px; }
+    .detail-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); }
+    .detail-header { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+    .detail-header .train-id { font-family: monospace; font-weight: 900; font-size: 1.5rem; }
+    .detail-meta { font-size: .82rem; color: var(--muted); margin-bottom: 14px; line-height: 1.5; }
+    .detail-decode { font-size: .78rem; color: var(--muted); line-height: 1.55; padding: 10px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-bottom: 14px; }
+    .timing-table { font-size: .8rem; }
+    .timing-row { display: grid; grid-template-columns: 60px 1fr 60px; gap: 8px; padding: 6px 0; border-bottom: 1px solid #f1f5f9; align-items: baseline; }
+    .timing-row:last-child { border-bottom: none; }
+    .timing-row.est { opacity: .68; }
+    .timing-row.est .t-time::before { content: ''; }
+    .t-time { font-weight: 700; font-variant-numeric: tabular-nums; }
+    .t-stn  { font-weight: 500; }
+    .t-km   { color: var(--muted); font-size: .7rem; font-variant-numeric: tabular-nums; text-align: right; }
+    .photo-links { font-size: .82rem; line-height: 1.8; }
+    .photo-links a { color: var(--primary); text-decoration: none; font-weight: 600; }
+    .photo-links a:hover { text-decoration: underline; }
+    .permalink-hint { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); font-size: .7rem; color: var(--muted); }
+    .permalink-hint code { background: var(--bg); padding: 2px 5px; border-radius: 4px; font-family: monospace; }
+
+    /* "Full detail →" link in inline train row */
+    .train-detail .more-link { display: inline-block; margin-top: 8px; font-size: .75rem; font-weight: 700; color: var(--primary); text-decoration: none; }
+    .train-detail .more-link:hover { text-decoration: underline; }
+
+    /* Operator brand colour chips. Colours derived from each operator's livery /
+       corporate identity — not official assets, just visual identifiers. */
+    .op-chip { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; vertical-align: baseline; position: relative; top: -1px; box-shadow: 0 0 0 1px rgba(0,0,0,.08) inset; }
+    .op-PNT { background: #003478; }   /* Pacific National — navy blue */
+    .op-SCT { background: #c41e3a; }   /* SCT Logistics — red */
+    .op-GWI { background: #e67d1f; }   /* Genesee & Wyoming — orange */
+    .op-GSR { background: #7c1d1d; }   /* Great Southern Rail — burgundy (Overland livery) */
+
+    /* GSR Overland feature card on detail pages */
+    .overland-card { background: linear-gradient(135deg, #7c1d1d 0%, #4a0f0f 100%); color: #fff; border-radius: 10px; padding: 14px 16px; margin: 14px 0; font-size: .82rem; line-height: 1.55; }
+    .overland-card .badge { display: inline-block; background: rgba(255,255,255,.18); padding: 2px 8px; border-radius: 12px; font-size: .68rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; margin-bottom: 6px; }
+    .overland-card .name { font-size: 1.15rem; font-weight: 800; margin-bottom: 4px; }
+    .overland-card .desc { opacity: .92; }
+    .overland-card a { color: #fff; text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<div id="picker-overlay">
+  <div class="picker-card">
+    <h2>Pick your station</h2>
+    <p>Which station are you watching from? You can change this any time.</p>
+    <div class="station-list" id="station-list"></div>
+  </div>
+</div>
+
+<header>
+  <div class="hdr-left">
+    <button class="station-btn" onclick="openPicker()">
+      <span id="hdr-station">—</span>
+      <span class="chevron">▾</span>
+    </button>
+    <span id="updated"></span>
+  </div>
+  <div style="display:flex; align-items:center; gap:10px">
+    <button class="station-btn" onclick="location.hash='#/map'" title="Live map view">🗺 Map</button>
+    <div id="clock">--:--</div>
+  </div>
+</header>
+
+<div id="disc" style="display:none"></div>
+
+<div id="map-overlay" class="hidden">
+  <div class="map-header">
+    <button class="map-back" onclick="closeMap()">← Back</button>
+    <div class="map-title">Live position</div>
+    <div class="map-zoom-toggle">
+      <button class="zoom-btn active" data-zoom="adelaide">Adelaide</button>
+      <button class="zoom-btn" data-zoom="full">Full line</button>
+    </div>
+  </div>
+  <div id="leaflet-map"></div>
+  <div class="map-footer">
+    <span id="map-train-count">No trains</span>
+    <span>Positions estimated from ARTC schedule · ±1–2 min · click a dot for detail</span>
+  </div>
+</div>
+
+<div id="detail-view" class="hidden">
+  <button class="detail-back" onclick="location.hash=''">← All trains</button>
+  <div id="detail-content"></div>
+</div>
+
+<main>
+  <div class="day-bar" id="day-bar">
+    <button class="day-pill" data-day="MON">Mon</button>
+    <button class="day-pill" data-day="TUE">Tue</button>
+    <button class="day-pill" data-day="WED">Wed</button>
+    <button class="day-pill" data-day="THU">Thu</button>
+    <button class="day-pill" data-day="FRI">Fri</button>
+    <button class="day-pill" data-day="SAT">Sat</button>
+    <button class="day-pill" data-day="SUN">Sun</button>
+  </div>
+
+  <div class="filter-bar">
+    <span class="filter-label">Direction</span>
+    <div class="filter-group" id="dir-group">
+      <button class="filt active" data-dir="both">Both</button>
+      <button class="filt dir-in"  data-dir="inbound">Adelaide</button>
+      <button class="filt dir-out" data-dir="outbound">Melbourne</button>
+    </div>
+    <span class="filter-label">Type</span>
+    <div class="filter-group" id="type-group">
+      <!-- populated dynamically from data -->
+    </div>
+  </div>
+
+  <div id="hero">
+    <div class="hero-label" id="hero-label">Next train at —</div>
+    <div class="hero-time no-train" id="hero-time">—</div>
+    <div class="hero-away" id="hero-away"></div>
+    <div class="hero-meta" id="hero-meta"></div>
+  </div>
+
+  <div class="section-label" id="list-label">Today at —</div>
+  <div id="train-list"></div>
+
+  <button id="full-toggle" onclick="toggleFull()">Show full timetable ▾</button>
+  <div id="full-section">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr id="thead-row">
+            <th>Train</th><th>Dir</th><th>Size</th><th>Type</th>
+            <th id="th-s0"></th><th id="th-s1"></th><th id="th-s2"></th>
+            <th id="th-s3"></th><th id="th-s4"></th>
+            <th>Days</th>
+          </tr>
+        </thead>
+        <tbody id="full-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<footer>
+  Data from the <a href="https://www.artc.com.au/customers/operations/mtp/" target="_blank" rel="noopener">ARTC Master Train Plan</a>.
+  Scheduled paths only — trains can run late, early, or be cancelled.
+  Do not trespass on the rail corridor.
+  <div style="margin-top:8px">
+    Live service status:
+    <a href="https://www.artc.com.au/notices-waivers-and-alerts/" target="_blank" rel="noopener">ARTC Notices &amp; Alerts</a>
+    · <a href="https://www.railpage.com.au/f-f5.htm" target="_blank" rel="noopener">Railpage SA forum</a>
+    <span style="opacity:.7">— official disruptions and the railfan community that catches them first</span>
+  </div>
+  <div style="margin-top:4px">
+    Local resources:
+    <a href="https://www.kanestrains.com" target="_blank" rel="noopener">Kane's Trains</a>
+    · <a href="https://railgallery.wongm.com/south-australia/" target="_blank" rel="noopener">Wongm's SA gallery</a>
+    · <a href="https://www.sa-trackandsignal.net/" target="_blank" rel="noopener">SA Track &amp; Signal</a>
+    <span style="opacity:.7">— Adelaide railfan content, photo archives, signal diagrams</span>
+  </div>
+
+  <details>
+    <summary>How are Unley Park, Mitcham, Blackwood etc. estimated? <span style="opacity:.7">~</span></summary>
+    <div class="body">
+      The ARTC plan only timestamps freight at <strong>Keswick</strong> and <strong>Belair</strong> on the suburban Belair line.
+      For stations between them (shown with a <span style="opacity:.7">~</span>), times are estimated from each train's own
+      Keswick↔Belair journey time, distributed across four terrain zones:
+      <table>
+        <tr><th>Zone</th><th>Km from Keswick</th><th>Speed</th></tr>
+        <tr><td>Keswick approach &nbsp;<span style="opacity:.6">accel/decel from stop</span></td><td>0.0–0.7</td><td>~25 km/h</td></tr>
+        <tr><td>Suburban cruise &nbsp;<span style="opacity:.6">Keswick → Mitcham</span></td><td>0.7–4.7</td><td>~45 km/h</td></tr>
+        <tr><td>Climb &nbsp;<span style="opacity:.6">Mitcham → Blackwood, 1-in-45 grade</span></td><td>4.7–14.3</td><td>~30 km/h</td></tr>
+        <tr><td>Plateau cruise &nbsp;<span style="opacity:.6">Blackwood → Belair</span></td><td>14.3–17.7</td><td>~65 km/h</td></tr>
+      </table>
+      <div style="font-size:.65rem;opacity:.7;margin:-2px 0 8px">Distances measured from Keswick (the freight terminal). Add 3.8 km for the official ARTC kilometrage from Adelaide railway station.</div>
+      Validated against 57 scheduled paths; agrees with the observed median journey time of ~29 min. Accurate to about
+      ±1–2 min for an unhindered train. Belair isn't modelled as a slowdown — through freight stays on the mainline
+      at line speed. Direction (uphill vs downhill) only shifts speeds ~10 % here: power going up and brake heat
+      coming down constrain trains similarly.
+    </div>
+  </details>
+</footer>
+
+<script>
+const STATION_META = {
+  'Murray Bridge':         'Base of Hills, eastern approach',
+  'Balhannah':             'Mt Barker area, mid-Hills',
+  'Mt Lofty':              'Summit — trains work hardest here',
+  'Belair':                'Popular viewing point, upper Hills',
+  'Keswick':               'Adelaide terminal',
+};
+
+// Belair line passenger stations between Keswick and Belair — not in the ARTC MTP,
+// so times are estimated from the surrounding MTP timing points (Keswick & Belair).
+//
+// frac = fraction of the Keswick→Belair journey time at which the train passes
+//        this station, derived from a four-zone speed profile.
+//
+// Speed profile (km from Adelaide, used to compute the fractions):
+//   • 3.8–4.5    Keswick approach (accel from / decel to stop):  ~25 km/h
+//   • 4.5–8.5    Suburban cruise (Keswick → Mitcham):            ~45 km/h
+//   • 8.5–18.1   Climb (Mitcham → Blackwood, 1-in-45 grade):     ~30 km/h
+//   • 18.1–21.5  Plateau cruise (Blackwood → Belair):            ~65 km/h
+//
+// Belair itself isn't modelled as a slowdown zone — through trains stay on the
+// mainline at line speed; only services held for opposing traffic take the loop
+// turnout, and that's an outlier the model deliberately doesn't try to capture.
+//
+// Applied as: t_X = t_keswick + frac_X * (t_belair − t_keswick).
+// Works for both directions (the difference is negative for inbound trains).
+const BELAIR_INTERMEDIATE = {
+  'Adelaide Showground': 0.016,   //  4.0 km
+  'Goodwood':            0.080,   //  5.0 km
+  'Millswood':           0.121,   //  5.9 km
+  'Unley Park':          0.171,   //  7.0 km
+  'Mitcham':             0.239,   //  8.5 km  — start of climb
+  'Torrens Park':        0.293,   //  9.3 km
+  'Lynton':              0.389,   // 10.7 km
+  'Eden Hills':          0.627,   // 14.2 km
+  'Coromandel':          0.832,   // 17.2 km
+  'Blackwood':           0.893,   // 18.1 km  — top of climb
+  'Glenalta':            0.931,   // 19.3 km
+  'Pinera':              0.959,   // 20.2 km
+};
+
+// Picker station list in geographic order (Keswick → Murray Bridge).
+// Intermediate stations are shown between Keswick and Belair.
+const PICKER_STATIONS = [
+  'Keswick',
+  'Adelaide Showground', 'Goodwood', 'Millswood', 'Unley Park',
+  'Mitcham', 'Torrens Park', 'Lynton', 'Eden Hills', 'Coromandel',
+  'Blackwood', 'Glenalta', 'Pinera',
+  'Belair', 'Mt Lofty', 'Balhannah', 'Murray Bridge',
+];
+
+// ── Geography (for the map view) ─────────────────────────────────
+// Coords verified for the major anchors (Wikipedia infoboxes); intermediate
+// stations are estimated to ±200m from suburb/town centers. The OpenRailwayMap
+// overlay shows the real track for visual reference.
+const STATION_COORDS = {
+  'Keswick':             [-34.93806, 138.58111],  // Adelaide Parklands Terminal
+  'Adelaide Showground': [-34.9460,  138.5860],
+  'Goodwood':            [-34.95158, 138.58491],
+  'Millswood':           [-34.9610,  138.5870],
+  'Unley Park':          [-34.9685,  138.6045],
+  'Mitcham':             [-34.9847,  138.6165],
+  'Torrens Park':        [-34.9913,  138.6155],
+  'Lynton':              [-35.0023,  138.6177],
+  'Eden Hills':          [-35.0227,  138.6177],
+  'Coromandel':          [-35.0383,  138.6195],
+  'Blackwood':           [-35.0247,  138.6193],
+  'Glenalta':            [-35.0185,  138.6225],
+  'Pinera':              [-35.0080,  138.6262],
+  'Belair':              [-34.9981,  138.6330],
+  'Mt Lofty':            [-35.0077,  138.7095],
+  'Ambleside':           [-35.018,   138.808],
+  'Balhannah':           [-34.9830,  138.8170],
+  'Mt Barker Junction':  [-35.0500,  138.8650],
+  'Petwood':             [-35.0800,  138.9550],
+  'Callington':          [-35.1180,  139.0450],
+  'Monarto South':       [-35.0940,  139.1570],
+  'Murray Bridge':       [-35.1170,  139.2670],
+};
+
+// Track kilometres from Adelaide railway station (per ARTC + Wikipedia distances)
+const STATION_KM = {
+  'Keswick':              3.8, 'Adelaide Showground':  4.0,
+  'Goodwood':             5.0, 'Millswood':            5.9,
+  'Unley Park':           7.0, 'Mitcham':              8.5,
+  'Torrens Park':         9.3, 'Lynton':              10.7,
+  'Eden Hills':          14.2, 'Coromandel':          17.2,
+  'Blackwood':           18.1, 'Glenalta':            19.3,
+  'Pinera':              20.2, 'Belair':              21.5,
+  'Mt Lofty':            31.4, 'Ambleside':           42.6,
+  'Balhannah':           45.8, 'Mt Barker Junction':  50.0,
+  'Petwood':             62.4, 'Callington':          71.4,
+  'Monarto South':       82.2, 'Murray Bridge':       96.6,
+};
+
+// All stations in geographic order (for the polyline + station markers)
+const LINE_STATIONS = [
+  'Keswick', 'Adelaide Showground', 'Goodwood', 'Millswood', 'Unley Park',
+  'Mitcham', 'Torrens Park', 'Lynton', 'Eden Hills', 'Coromandel',
+  'Blackwood', 'Glenalta', 'Pinera', 'Belair', 'Mt Lofty',
+  'Ambleside', 'Balhannah', 'Mt Barker Junction', 'Petwood',
+  'Callington', 'Monarto South', 'Murray Bridge',
+];
+
+// Stations that are ARTC MTP freight timing points (used for position calc)
+const MTP_TIMING_POINTS = new Set([
+  'Keswick', 'Belair', 'Mt Lofty', 'Ambleside', 'Balhannah',
+  'Mt Barker Junction', 'Petwood', 'Callington', 'Monarto South', 'Murray Bridge',
+]);
+
+// 4-zone speed profile for Keswick↔Belair (km_from, km_to, km/h)
+// Used to invert "fraction-of-time-elapsed" → km, so live position dots respect
+// the steep climb instead of moving at uniform speed across the section.
+const KB_ZONES = [
+  [3.8,  4.5, 25.0],   // Keswick approach (accel/decel from stop)
+  [4.5,  8.5, 45.0],   // Suburban cruise (Keswick→Mitcham)
+  [8.5, 18.1, 30.0],   // Climb (Mitcham→Blackwood, 1-in-45 grade)
+  [18.1,21.5, 65.0],   // Plateau (Blackwood→Belair)
+];
+const KB_TOTAL_MIN = KB_ZONES.reduce((t, [a,b,v]) => t + (b-a)/v*60, 0);
+
+// Given fraction-of-time-elapsed (0→1) on an OUTBOUND Keswick→Belair leg,
+// return the km position along the line.
+function kbTimeFracToKm(timeFrac) {
+  let elapsed = timeFrac * KB_TOTAL_MIN;
+  for (const [lo, hi, v] of KB_ZONES) {
+    const segMin = (hi - lo) / v * 60;
+    if (elapsed <= segMin) return lo + (elapsed / segMin) * (hi - lo);
+    elapsed -= segMin;
+  }
+  return 21.5;
+}
+
+// Track geometry from OpenStreetMap (fetched by fetch_track_geometry.py) —
+// loaded lazily on map open, then used for the polyline and km→lat/lon.
+let trackGeom = null;       // { points: [[lat, lon], …], cum: [km, …] }
+let stationOnTrack = null;  // station → cumulative-km on the OSM polyline
+let stationSnapped = null;  // station → [lat, lon] snapped to nearest polyline point
+
+async function loadTrackGeometry() {
+  if (trackGeom) return trackGeom;
+  try {
+    const r = await fetch('./data/track_geometry.json');
+    if (!r.ok) throw new Error('not found');
+    const d = await r.json();
+    const pts = d.points;
+    // Cumulative haversine distance along the polyline
+    const cum = [0];
+    for (let i = 1; i < pts.length; i++) cum.push(cum[i-1] + haversineKm(pts[i-1], pts[i]));
+    trackGeom = { points: pts, cum };
+
+    // Calibrate each station to its closest polyline point.
+    // We snap on geographic distance (in degrees²) — fine for sub-km accuracy.
+    stationOnTrack = {};
+    stationSnapped = {};
+    for (const s of LINE_STATIONS) {
+      const target = STATION_COORDS[s];
+      let bestI = 0, bestD = Infinity;
+      for (let i = 0; i < pts.length; i++) {
+        const dd = (pts[i][0]-target[0])**2 + (pts[i][1]-target[1])**2;
+        if (dd < bestD) { bestD = dd; bestI = i; }
+      }
+      stationOnTrack[s] = cum[bestI];
+      stationSnapped[s] = pts[bestI];
+    }
+    return trackGeom;
+  } catch (e) {
+    console.warn('Track geometry unavailable, falling back to station polyline:', e);
+    return null;
+  }
+}
+
+// Returns the best-available coord for a station: snapped to OSM track if
+// geometry is loaded, else the original approximate coord.
+function stationLatLon(s) {
+  return (stationSnapped && stationSnapped[s]) || STATION_COORDS[s];
+}
+
+function haversineKm(a, b) {
+  const R = 6371;
+  const dLat = (b[0]-a[0]) * Math.PI / 180;
+  const dLon = (b[1]-a[1]) * Math.PI / 180;
+  const la1 = a[0] * Math.PI / 180, la2 = b[0] * Math.PI / 180;
+  const h = Math.sin(dLat/2)**2 + Math.cos(la1)*Math.cos(la2)*Math.sin(dLon/2)**2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+
+// Convert km-from-Adelaide → {lat, lon}.
+// If OSM track geometry is loaded, walks the real polyline (snaps dots to the
+// actual track); else falls back to the station-only polyline approximation.
+function llFromKm(km) {
+  if (trackGeom && stationOnTrack) {
+    // Find bracketing stations by official km, then map km → polyline-cum-km
+    // via linear interpolation between their calibrated polyline positions.
+    let aS = LINE_STATIONS[0], bS = LINE_STATIONS[LINE_STATIONS.length-1];
+    for (let i = 0; i < LINE_STATIONS.length - 1; i++) {
+      const a = LINE_STATIONS[i], b = LINE_STATIONS[i+1];
+      if (km >= STATION_KM[a] && km <= STATION_KM[b]) { aS = a; bS = b; break; }
+    }
+    const ka = STATION_KM[aS], kb = STATION_KM[bS];
+    const f = (kb === ka) ? 0 : (km - ka) / (kb - ka);
+    const polyKm = stationOnTrack[aS] + f * (stationOnTrack[bS] - stationOnTrack[aS]);
+
+    // Find the polyline segment containing polyKm and interpolate within it
+    const cum = trackGeom.cum, pts = trackGeom.points;
+    let i = 0;
+    while (i < cum.length - 1 && cum[i+1] < polyKm) i++;
+    const segLen = cum[i+1] - cum[i];
+    const segF = segLen > 0 ? (polyKm - cum[i]) / segLen : 0;
+    const [la1, lo1] = pts[i];
+    const [la2, lo2] = pts[Math.min(i+1, pts.length-1)];
+    return [la1 + segF*(la2-la1), lo1 + segF*(lo2-lo1)];
+  }
+  // Fallback: straight lines between station coords
+  for (let i = 0; i < LINE_STATIONS.length - 1; i++) {
+    const a = LINE_STATIONS[i], b = LINE_STATIONS[i+1];
+    const ka = STATION_KM[a], kb = STATION_KM[b];
+    if (km >= ka && km <= kb) {
+      const f = (kb === ka) ? 0 : (km - ka) / (kb - ka);
+      const [la1, lo1] = STATION_COORDS[a];
+      const [la2, lo2] = STATION_COORDS[b];
+      return [la1 + f * (la2 - la1), lo1 + f * (lo2 - lo1)];
+    }
+  }
+  return STATION_COORDS[LINE_STATIONS[LINE_STATIONS.length - 1]];
+}
+
+// For a given train + current minute-of-day, return {km, lat, lon, from, to} or null.
+function currentPosition(train, nowMin) {
+  const stamped = [];
+  for (const stn of Object.keys(train.stations || {})) {
+    if (!MTP_TIMING_POINTS.has(stn)) continue;
+    const t = parseTimeStr(train.stations[stn]);
+    if (t !== null) stamped.push({ stn, km: STATION_KM[stn], t });
+  }
+  if (stamped.length < 2) return null;
+  stamped.sort((a, b) => a.t - b.t);   // chronological
+  if (nowMin < stamped[0].t - 1) return null;
+  if (nowMin > stamped[stamped.length-1].t + 1) return null;
+
+  // Find the leg containing `now`
+  let a = null, b = null;
+  for (let i = 0; i < stamped.length - 1; i++) {
+    if (stamped[i].t <= nowMin && nowMin <= stamped[i+1].t) {
+      a = stamped[i]; b = stamped[i+1]; break;
+    }
+  }
+  if (!a) {
+    // Clamp to the closest endpoint (handles ±1 min near boundaries)
+    const last = stamped[stamped.length-1];
+    return { km: last.km, lat: STATION_COORDS[last.stn][0], lon: STATION_COORDS[last.stn][1],
+             from: last.stn, to: last.stn };
+  }
+
+  const segMin = b.t - a.t;
+  const timeFrac = segMin > 0 ? (nowMin - a.t) / segMin : 0;
+
+  // For the Keswick↔Belair leg, apply the 4-zone speed model.
+  let km;
+  const isKB = (a.stn === 'Keswick' && b.stn === 'Belair')
+            || (a.stn === 'Belair'  && b.stn === 'Keswick');
+  if (isKB) {
+    const outbound = (a.stn === 'Keswick');
+    const kmFromKeswick = kbTimeFracToKm(outbound ? timeFrac : 1 - timeFrac);
+    km = kmFromKeswick;
+  } else {
+    // Linear-by-time elsewhere (good enough until per-segment profiles exist)
+    km = a.km + timeFrac * (b.km - a.km);
+  }
+
+  const [lat, lon] = llFromKm(km);
+  return { km, lat, lon, from: a.stn, to: b.stn };
+}
+
+const DAYS = ['MON','TUE','WED','THU','FRI','SAT','SUN'];
+
+let selectedStation = localStorage.getItem('belair_station') || null;
+// Clear any saved station that's no longer in the list (e.g. removed Seaford-line stations
+// like Clarence Park / Edwardstown that lingered in localStorage from earlier versions).
+if (selectedStation && !PICKER_STATIONS.includes(selectedStation)) {
+  selectedStation = null;
+  localStorage.removeItem('belair_station');
+}
+let selectedDay = null;
+let filterDir  = 'both';       // 'both' | 'inbound' | 'outbound'
+let filterType = 'all';        // 'all' | 'Intermodal' | 'Steel'
+let rawData = null;
+let nowMin = 0;
+
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+  const prev = nowMin;
+  nowMin = now.getHours() * 60 + now.getMinutes();
+  // If the minute rolled over, re-render so "in X min" tickers update.
+  // Cheap because rerender() just re-filters and re-paints — no network.
+  if (prev !== nowMin && rawData) {
+    if (typeof rerender === 'function') rerender();
+    if (mapInstance && !document.getElementById('map-overlay').classList.contains('hidden')) {
+      updateTrainDots();
+    }
+  }
+}
+setInterval(updateClock, 5000);  // poll every 5s; only re-renders on minute boundary
+updateClock();
+
+function currentDayCode() { return DAYS[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1]; }
+
+// ── Picker ─────────────────────────────────────────────────────────
+function buildPicker() {
+  const list = document.getElementById('station-list');
+  list.innerHTML = '';
+  let inIntermediate = false;
+  PICKER_STATIONS.forEach(s => {
+    const isInterp = s in BELAIR_INTERMEDIATE;
+    if (isInterp && !inIntermediate) {
+      inIntermediate = true;
+      const lbl = document.createElement('div');
+      lbl.style.cssText = 'font-size:.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;padding:8px 4px 4px';
+      lbl.textContent = 'Estimated (terrain-modelled)';
+      list.appendChild(lbl);
+    }
+    const btn = document.createElement('button');
+    btn.className = 'station-option';
+    btn.innerHTML = `<span>${s}${isInterp ? ' <span style="font-size:.7em;color:var(--muted)">~</span>' : ''}</span><span class="meta">${isInterp ? '' : (STATION_META[s] || '')}</span>`;
+    btn.onclick = () => selectStation(s);
+    list.appendChild(btn);
+  });
+}
+function openPicker() { document.getElementById('picker-overlay').classList.remove('hidden'); }
+function selectStation(name) {
+  selectedStation = name;
+  localStorage.setItem('belair_station', name);
+  document.getElementById('picker-overlay').classList.add('hidden');
+  document.getElementById('hdr-station').textContent = name;
+  refresh();
+}
+
+// ── Data load ──────────────────────────────────────────────────────
+async function loadData() {
+  // Works both when served by Flask (which still exists for local dev)
+  // and when served as a static site from Cloudflare Pages.
+  let url = './data/trains.json'; // relative — works at both root (CF Pages) and subpath (GitHub Pages)
+  try {
+    const r = await fetch(url);
+    if (!r.ok) throw new Error('not found');
+    return await r.json();
+  } catch {
+    // Fallback for Flask dev server where static files are at /static/
+    const r2 = await fetch('/api/trains?direction=both&day=ALL');
+    if (r2.ok) {
+      // Can't use api/trains directly for all days — just return raw JSON file
+      throw new Error('Could not load trains.json');
+    }
+    throw new Error('Data unavailable');
+  }
+}
+
+async function refresh() {
+  const day = selectedDay || currentDayCode();
+
+  if (!rawData) {
+    try {
+      rawData = await loadData();
+    } catch (e) {
+      console.error(e);
+      return;
+    }
+  }
+
+  const stations = rawData.stations_order || [];
+  buildPicker();
+  buildTypeFilter(rawData.trains || []);
+
+  // Update day pill highlight
+  document.querySelectorAll('.day-pill').forEach(b =>
+    b.classList.toggle('active', b.dataset.day === day)
+  );
+
+  // Disclaimer
+  const disc = document.getElementById('disc');
+  if (rawData.disclaimer) { disc.textContent = '⚠ ' + rawData.disclaimer; disc.style.display = ''; }
+
+  // MTP date tag
+  if (rawData.mtp_effective) {
+    document.getElementById('updated').textContent = 'MTP ' + rawData.mtp_effective;
+  }
+
+  // Filter trains for selected day + active filters
+  const trains = (rawData.trains || []).filter(t =>
+    t.days && t.days.includes(day) &&
+    (filterDir  === 'both' || t.direction === filterDir) &&
+    (filterType === 'all'  || t.commodity === filterType)
+  );
+
+  if (!selectedStation) {
+    openPicker();
+  } else {
+    document.getElementById('picker-overlay').classList.add('hidden');
+    document.getElementById('hdr-station').textContent = selectedStation;
+  }
+
+  renderAll(trains, stations);
+}
+
+// ── Status computation (mirrors app.py logic) ──────────────────────
+function computeStatus(stations, order) {
+  const times = order
+    .map(s => ({ s, t: parseTimeStr(stations?.[s]) }))
+    .filter(x => x.t !== null)
+    .sort((a, b) => a.t - b.t);
+
+  if (!times.length) return { status: 'unknown', nextStation: null, minutesAway: null, sortKey: 9999 };
+
+  const firstT = times[0].t, lastT = times[times.length - 1].t;
+
+  let nextStation = null, minutesAway = null;
+  for (const { s, t } of times) {
+    if (t >= nowMin - 5) { nextStation = s; minutesAway = t - nowMin; break; }
+  }
+
+  if (nextStation === null) return { status: 'passed', nextStation: null, minutesAway: null, sortKey: lastT + 1440 };
+
+  let status;
+  if (minutesAway <= 0)   status = 'imminent';
+  else if (minutesAway <= 30)  status = 'imminent';
+  else if (minutesAway <= 120) status = 'upcoming';
+  else                         status = 'later';
+
+  const sortKey = firstT >= nowMin - 30 ? firstT : firstT + 1440;
+  return { status, nextStation, minutesAway, sortKey };
+}
+
+// ── Render ─────────────────────────────────────────────────────────
+function renderAll(trains, stations) {
+  if (!selectedStation || !trains) return;
+
+  const day = selectedDay || currentDayCode();
+  // Only mark trains "passed" when viewing today — future/past days show all trains normally
+  const effectiveNowMin = day === currentDayCode() ? nowMin : -9999;
+
+  document.getElementById('hero-label').textContent = 'Next train at ' + selectedStation;
+  document.getElementById('list-label').textContent =
+    (day === currentDayCode() ? 'Today' : day.charAt(0) + day.slice(1).toLowerCase()) + ' at ' + selectedStation;
+
+  const entries = trains
+    .map(t => {
+      const pair = getTimePair(t, selectedStation);
+      return { train: t, tMin: pair.tMin, raw: pair.raw, estimated: pair.estimated };
+    })
+    .filter(e => e.tMin !== null)
+    .sort((a, b) => a.tMin - b.tMin);
+
+  renderHero(entries, effectiveNowMin);
+  renderList(entries, effectiveNowMin);
+  renderFullTable(trains, stations);
+}
+
+function renderHero(entries, effectiveNowMin) {
+  const timeEl = document.getElementById('hero-time');
+  const awayEl = document.getElementById('hero-away');
+  const metaEl = document.getElementById('hero-meta');
+  const next = entries.find(e => e.tMin >= effectiveNowMin - 5);
+
+  if (!next) {
+    timeEl.className = 'hero-time no-train'; timeEl.textContent = 'No more trains today';
+    awayEl.textContent = ''; metaEl.innerHTML = ''; return;
+  }
+  timeEl.className = 'hero-time';
+  timeEl.textContent = (next.estimated ? '~' : '') + displayTime(next.raw);
+
+  const diff = next.tMin - effectiveNowMin;
+  let awayText, awayClass;
+  if (effectiveNowMin === -9999)     { awayText = ''; awayClass = 'later'; }
+  else if (diff <= 0)                { awayText = 'Now / arriving'; awayClass = 'imminent'; }
+  else if (diff < 60)               { awayText = `in ${diff} min`; awayClass = diff < 30 ? 'imminent' : 'upcoming'; }
+  else                              { awayText = `in ${Math.floor(diff/60)}h ${diff%60>0?diff%60+'m':''}`; awayClass = 'later'; }
+
+  awayEl.className = 'hero-away ' + awayClass; awayEl.textContent = awayText;
+  const t = next.train;
+  const dir = dirLabel(t.direction);
+  metaEl.innerHTML = `
+    <span class="tag tag-dir-${t.direction==='inbound'?'in':'out'}">${dir}</span>
+    ${sizeTag(t.length_m)}
+    <span style="font-size:.82rem;color:var(--muted)">${operatorLabelHtml(t.operator)} · ${commodityShort(t.commodity)}${scheduleShort(t.schedule) ? ' · ' + scheduleShort(t.schedule) : ''} · ${t.train_id}</span>
+    ${next.estimated ? '<span style="font-size:.72rem;color:var(--muted)">· ~estimated</span>' : ''}`;
+}
+
+function renderList(entries, effectiveNowMin) {
+  const list = document.getElementById('train-list');
+  list.innerHTML = '';
+  if (!entries.length) {
+    list.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px;font-size:.85rem">No trains at this station on this day</div>';
+    return;
+  }
+  for (const { train: t, tMin, raw, estimated } of entries) {
+    const diff = tMin - effectiveNowMin;
+    let status, awayText;
+    if (effectiveNowMin === -9999)  { status = 'later'; awayText = ''; }
+    else if (diff < -30)            { status = 'passed'; awayText = 'passed'; }
+    else if (diff <= 0)             { status = 'imminent'; awayText = 'now'; }
+    else if (diff < 30)             { status = 'imminent'; awayText = `${diff}m`; }
+    else if (diff < 120)            { status = 'upcoming'; awayText = `${diff}m`; }
+    else { const h=Math.floor(diff/60),m=diff%60; status='later'; awayText=`${h}h${m>0?m+'m':''}`; }
+
+    const dir = dirLabel(t.direction);
+    const timeDisplay = (estimated ? '~' : '') + displayTime(raw);
+    const row = document.createElement('div');
+    row.className = `train-row ${status}`;
+    row.innerHTML = `
+      <div class="train-row-main">
+        <div class="train-time ${status==='upcoming'||status==='imminent'?'next-time':''}">${timeDisplay}</div>
+        <div class="train-body">
+          <div class="train-id-row">
+            <span class="train-id">${t.train_id}</span>
+            <span class="tag tag-dir-${t.direction==='inbound'?'in':'out'}" style="font-size:.68rem;padding:2px 7px">${dir}</span>
+            ${status!=='later'&&status!=='passed'?`<span class="away-chip ${status}">${awayText}</span>`:''}
+          </div>
+          <div class="train-sub">${operatorLabelHtml(t.operator)} · ${commodityShort(t.commodity)}${scheduleShort(t.schedule) ? ' · ' + scheduleShort(t.schedule) : ''} · runs ${(t.days||[]).join(', ')}</div>
+        </div>
+        <div>${sizeTag(t.length_m)}</div>
+      </div>
+      <div class="train-detail">${trainDetailHtml(t, estimated)}<a class="more-link" href="#/train/${t.train_id}" onclick="event.stopPropagation()">Full detail page →</a></div>`;
+    row.addEventListener('click', () => row.querySelector('.train-detail').classList.toggle('open'));
+    list.appendChild(row);
+  }
+}
+
+function renderFullTable(trains, stations) {
+  stations.forEach((s, i) => { const th = document.getElementById('th-s'+i); if (th) th.textContent = s.replace('Murray Bridge','Murray Br.'); });
+  const tbody = document.getElementById('full-tbody');
+  tbody.innerHTML = '';
+  const sorted = [...trains].sort((a, b) => (firstTime(a.stations)||9999) - (firstTime(b.stations)||9999));
+  for (const t of sorted) {
+    const passed = (firstTime(t.stations) || 0) < nowMin - 45;
+    const tr = document.createElement('tr');
+    tr.className = passed ? 'passed' : '';
+    tr.innerHTML = `
+      <td style="font-weight:800;font-family:monospace">${t.train_id}</td>
+      <td style="font-size:.75rem;color:var(--muted)">${t.direction==='inbound'?'→ Adl':'← Mlb'}</td>
+      <td>${sizeTag(t.length_m)}</td>
+      <td>${t.commodity||''}</td>`;
+    stations.forEach(s => {
+      const td = document.createElement('td');
+      const raw = t.stations?.[s];
+      if (!raw) { td.style.color='var(--border)'; td.textContent='–'; }
+      else {
+        td.style.fontVariantNumeric='tabular-nums'; td.style.fontWeight='600';
+        td.textContent = displayTime(raw);
+        if (s === selectedStation) { td.style.color='var(--primary)'; td.style.fontWeight='900'; }
+      }
+      tr.appendChild(td);
+    });
+    const dayTd = document.createElement('td');
+    dayTd.style.color='var(--muted)'; dayTd.style.fontSize='.7rem';
+    dayTd.textContent = (t.days||[]).map(d=>d[0]+d[1].toLowerCase()).join(' ');
+    tr.appendChild(dayTd);
+    tbody.appendChild(tr);
+  }
+}
+
+// ── Helpers ────────────────────────────────────────────────────────
+function minutesToTimeStr(m) {
+  const nd = m >= 1440, actual = m % 1440;
+  return (nd ? '+' : '') + String(Math.floor(actual/60)).padStart(2,'0') + ':' + String(actual%60).padStart(2,'0');
+}
+
+// Return {raw, tMin, estimated} for a station, interpolating for Belair line intermediates.
+function getTimePair(train, station) {
+  const direct = train.stations?.[station];
+  if (direct && direct !== '-') return { raw: direct, tMin: parseTimeStr(direct), estimated: false };
+
+  const frac = BELAIR_INTERMEDIATE[station];
+  if (frac === undefined) return { raw: null, tMin: null, estimated: false };
+
+  const kMin = parseTimeStr(train.stations?.['Keswick']);
+  const bMin = parseTimeStr(train.stations?.['Belair']);
+  if (kMin === null || bMin === null) return { raw: null, tMin: null, estimated: false };
+
+  // Linear interpolation: t = t_keswick + frac * (t_belair - t_keswick)
+  // Works for both directions: positive difference = outbound, negative = inbound
+  const tMin = Math.round(kMin + frac * (bMin - kMin));
+  return { raw: minutesToTimeStr(tMin), tMin, estimated: true };
+}
+
+function parseTimeStr(s) {
+  if (!s||s==='-') return null;
+  const nd = s.startsWith('+'), clean = s.replace(/^\+/,'');
+  const m = clean.match(/^(\d{1,2}):(\d{2})$/);
+  return m ? parseInt(m[1])*60+parseInt(m[2])+(nd?1440:0) : null;
+}
+function displayTime(s) { return !s ? '–' : s.startsWith('+') ? s.slice(1)+'⁺' : s; }
+function firstTime(stations) {
+  const vals = Object.values(stations||{}).map(parseTimeStr).filter(v=>v!==null);
+  return vals.length ? Math.min(...vals) : null;
+}
+function sizeTag(len) {
+  if (!len) return '';
+  if (len>=1500) return `<span class="tag tag-large">${len}m</span>`;
+  if (len>=800)  return `<span class="tag tag-med">${len}m</span>`;
+  return `<span class="tag" style="background:var(--small-bg);color:var(--muted)">${len}m</span>`;
+}
+// ── Train ID decoder ──────────────────────────────────────────────
+// ARTC VIC-SA numbering: [seq][route][op-digit]
+// route: MA=Melb→Adl, MP=Melb→Keswick terminal, AM=Adl→Melb,
+//        PM=Keswick→Melb, XM=Express→Melb
+// trailing digit: 1=GWI, 5=PNT (main), 6=PNT (alt), 9=SCT, 8=GSR, 7=PNT trail, 4=PNT extra, 2=PNT EXP
+const ROUTE_DESC = {
+  MA: 'Melbourne → Adelaide (city)',
+  MP: 'Melbourne → Keswick freight terminal',
+  AM: 'Adelaide → Melbourne',
+  PM: 'Keswick freight terminal → Melbourne',
+  XM: 'Express → Melbourne',
+  PA: 'Keswick terminal (local move)',
+};
+const OP_DIGIT = { '1':'GWI','4':'PNT','5':'PNT','6':'PNT','7':'PNT (trail loco return)','8':'GSR','9':'SCT','2':'PNT' };
+
+const OPERATOR_BIO = {
+  PNT: 'Pacific National — Australia\'s largest private freight rail operator, runs intermodal and bulk services nationally.',
+  SCT: 'SCT Logistics — independent Australian freight operator, specialist Melbourne–Adelaide–Perth intermodal.',
+  GWI: 'Genesee & Wyoming Australia — US-owned, runs freight on regional and some interstate corridors.',
+  GSR: 'Great Southern Rail — operates the iconic long-distance passenger trains (The Overland Melbourne–Adelaide, The Ghan, Indian Pacific).',
+};
+
+function decodeTrainId(id) {
+  const m = id.match(/^(\d)([A-Z]+)(\d+)$/);
+  if (!m) return null;
+  return { seq: m[1], route: m[2], num: m[3] };
+}
+
+function lengthDesc(m) {
+  if (!m) return '';
+  const wagons = Math.round(m / 25);   // ~25 m per loaded intermodal wagon
+  const passTime = Math.round(m / (60 * 1000 / 3600));  // 60 km/h through suburbs
+  return `${m.toLocaleString()} m long — roughly ${wagons} wagons — takes about ${passTime} seconds to pass a level crossing at 60 km/h`;
+}
+
+function trainDetailHtml(t, estimated) {
+  const dec = decodeTrainId(t.train_id);
+  const lines = [];
+
+  // Train number decode
+  if (dec) {
+    const routeLabel = ROUTE_DESC[dec.route] || dec.route;
+    const opHint = OP_DIGIT[dec.num] ? ` (${OP_DIGIT[dec.num]} path)` : '';
+    lines.push(`<div class="detail-row">
+      <span class="decode-chip">${t.train_id}</span><span class="decode-arrow">→</span>
+      Service <strong>${dec.seq}</strong> in the weekly cycle
+      · <strong>${dec.route}</strong> = ${routeLabel}
+      · path <strong>${dec.num}</strong>${opHint}
+    </div>`);
+  }
+
+  // Length
+  if (t.length_m) {
+    lines.push(`<div class="detail-row"><span class="detail-key">Size:</span> ${lengthDesc(t.length_m)}</div>`);
+  }
+
+  // Operator bio
+  const bio = OPERATOR_BIO[t.operator];
+  if (bio) lines.push(`<div class="detail-row"><span class="detail-key">${operatorLabelHtml(t.operator)}:</span> ${bio}</div>`);
+
+  // Schedule
+  const schedLabel = SCHEDULE_META[t.schedule]?.label;
+  if (schedLabel) lines.push(`<div class="detail-row"><span class="detail-key">Service type:</span> ${schedLabel}</div>`);
+
+  // Estimated notice
+  if (estimated) lines.push(`<div class="detail-row" style="color:var(--amber)">⚠ Time at this station is estimated by linear interpolation between Keswick and Belair MTP times — accuracy ±5 min.</div>`);
+
+  return lines.join('');
+}
+
+function dirLabel(d) { return d === 'inbound' ? '→ Adelaide' : '→ Melbourne'; }
+
+const COMMODITY_META = {
+  Intermodal: { label: 'Intermodal',  sub: 'shipping containers', css: 'type-intermodal' },
+  Steel:      { label: 'Steel',       sub: 'coil / slab',         css: 'type-steel' },
+  Passenger:  { label: 'Passenger',   sub: 'Great Southern Rail', css: 'type-passenger' },
+};
+const SCHEDULE_META = {
+  SFR: { label: 'Standard freight',  short: '' },
+  EXP: { label: 'Express freight',   short: 'Express' },
+  PAS: { label: 'Passenger service', short: '' },      // commodity already says "Passenger"
+  TRL: { label: 'Trail loco (light engine)', short: 'Trail loco' },
+};
+
+function commodityLabel(c) {
+  const m = COMMODITY_META[c];
+  return m ? `${m.label} <span style="font-weight:400;opacity:.65">${m.sub}</span>` : (c || '—');
+}
+function commodityShort(c)  { return COMMODITY_META[c]?.label || c || '—'; }
+function scheduleShort(s)   { return SCHEDULE_META[s]?.short || ''; }
+function operatorLabel(op) {
+  const map = { SCT: 'SCT Logistics', PNT: 'Pacific National', GWI: 'Genesee & Wyoming', GSR: 'Great Southern Rail' };
+  return map[op] || op || '—';
+}
+// HTML variant — prefixes a small brand-colour chip. Use this in innerHTML contexts.
+function operatorLabelHtml(op) {
+  if (!op) return '—';
+  return `<span class="op-chip op-${op}"></span>${operatorLabel(op)}`;
+}
+
+// GSR passenger services through Adelaide Hills are all "The Overland"
+// (the Indian Pacific takes the northern route via Crystal Brook and doesn't
+// come through here). Return descriptive info for a known service, or null.
+function knownService(t) {
+  if (t.operator === 'GSR' && t.schedule === 'PAS') {
+    return {
+      name: 'The Overland',
+      tagline: 'Adelaide ↔ Melbourne · Australian passenger rail heritage',
+      desc: 'One of only two surviving great long-distance passenger trains in Australia (alongside the Indian Pacific, which uses the northern route). The Overland has run between Adelaide and Melbourne since 1887. Operated by Journey Beyond Rail Expeditions, twice weekly in each direction.',
+      link: 'https://www.journeybeyondrail.com.au/the-overland/',
+    };
+  }
+  return null;
+}
+
+// Build photo-search URLs targeted to this specific train.
+// For known named services we search by name (much higher hit rate than
+// generic operator searches). For freight we add class & commodity hints.
+function photoSearchTargets(t) {
+  const known = knownService(t);
+  let primary;        // descriptive keyword most likely to surface real photos
+
+  if (known) {
+    primary = known.name;          // "The Overland"
+  } else if (t.operator === 'PNT' && t.commodity === 'Intermodal') {
+    primary = 'Pacific National NR class intermodal';
+  } else if (t.operator === 'PNT' && t.commodity === 'Steel') {
+    primary = 'Pacific National steel train';
+  } else if (t.operator === 'SCT') {
+    primary = 'SCT Logistics train';
+  } else if (t.operator === 'GWI' || t.operator === 'GWA') {
+    primary = 'Genesee Wyoming Australia GWA';
+  } else {
+    primary = operatorLabel(t.operator) + ' freight';
+  }
+
+  // "Adelaide" is enough disambiguation for the global photo sites — "Mt Lofty"
+  // was over-narrow and dropped most valid Belair/Mt Barker/eastern photos.
+  const flickrQ = primary + ' Adelaide';
+  // Wongm's gallery is Australian-focused so doesn't need any location cue.
+
+  return [
+    ['Flickr',                `https://www.flickr.com/search/?text=${encodeURIComponent(flickrQ)}`],
+    ['Google Images',         `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(flickrQ)}`],
+    // Wongm's gallery doesn't expose a useful search URL — ?s= returns
+    // recent-uploads, /page/search/X is 404. Site-search via Google instead.
+    ['Wongm\'s Rail Gallery', `https://www.google.com/search?tbm=isch&q=${encodeURIComponent('site:railgallery.wongm.com ' + primary)}`],
+    // railpictures.net is the same story — Joomla, serialized ?where= params
+    // that aren't easy to construct externally.
+    ['railpictures.net',      `https://www.google.com/search?tbm=isch&q=${encodeURIComponent('site:railpictures.net ' + primary)}`],
+    // Kane's Trains — Adelaide-based YouTube channel, regular SA freight coverage.
+    // Channel search URL is supported by YouTube.
+    ['Kane\'s Trains (YouTube)', `https://www.youtube.com/@KanesTrains/search?query=${encodeURIComponent(primary)}`],
+  ];
+}
+
+function buildTypeFilter(allTrains) {
+  const commodities = [...new Set(allTrains.map(t => t.commodity).filter(Boolean))].sort();
+  const group = document.getElementById('type-group');
+  group.innerHTML = '';
+  const mkBtn = (type, html, extraCss='') => {
+    const b = document.createElement('button');
+    b.className = 'filt' + (filterType === type ? ' active' : '') + (extraCss ? ' ' + extraCss : '');
+    b.dataset.type = type;
+    b.innerHTML = html;
+    group.appendChild(b);
+  };
+  mkBtn('all', 'All');
+  commodities.forEach(c => {
+    const m = COMMODITY_META[c];
+    mkBtn(c, commodityLabel(c), m?.css || '');
+  });
+}
+
+function toggleFull() {
+  const s=document.getElementById('full-section'), b=document.getElementById('full-toggle');
+  b.textContent = s.classList.toggle('open') ? 'Hide full timetable ▴' : 'Show full timetable ▾';
+}
+
+function rerender() {
+  if (!rawData) return;
+  const day = selectedDay || currentDayCode();
+  const trains = (rawData.trains || []).filter(t =>
+    t.days && t.days.includes(day) &&
+    (filterDir  === 'both' || t.direction === filterDir) &&
+    (filterType === 'all'  || t.commodity === filterType)
+  );
+  renderAll(trains, rawData.stations_order || []);
+}
+
+document.getElementById('dir-group').addEventListener('click', e => {
+  const btn = e.target.closest('.filt'); if (!btn) return;
+  filterDir = btn.dataset.dir;
+  document.querySelectorAll('#dir-group .filt').forEach(b => b.classList.toggle('active', b === btn));
+  rerender();
+});
+
+document.getElementById('type-group').addEventListener('click', e => {
+  const btn = e.target.closest('.filt'); if (!btn) return;
+  filterType = btn.dataset.type;
+  document.querySelectorAll('#type-group .filt').forEach(b => b.classList.toggle('active', b === btn));
+  rerender();
+});
+
+document.getElementById('day-bar').addEventListener('click', e => {
+  const btn = e.target.closest('.day-pill'); if (!btn) return;
+  selectedDay = btn.dataset.day;
+  document.querySelectorAll('.day-pill').forEach(b => b.classList.toggle('active', b === btn));
+  rerender();
+});
+
+// ── Map view ──────────────────────────────────────────────────────
+let mapInstance = null;
+let trainMarkers = [];
+let mapUpdateInterval = null;
+
+function initMap() {
+  if (mapInstance) return mapInstance;
+
+  const map = L.map('leaflet-map', { zoomControl: true, attributionControl: true })
+    .setView([-34.99, 138.62], 11);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors',
+    maxZoom: 18,
+  }).addTo(map);
+
+  L.tileLayer('https://{s}.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png', {
+    attribution: '© OpenRailwayMap',
+    maxZoom: 18,
+    opacity: 0.9,
+  }).addTo(map);
+
+  // Track polyline: real OSM geometry when available, station-only fallback otherwise
+  drawTrackPolyline(map);
+
+  // Station markers (will be redrawn after geometry loads, snapped to track)
+  placeStationMarkers(map);
+
+  mapInstance = map;
+  return map;
+}
+
+let stationMarkers = [];
+function placeStationMarkers(map) {
+  stationMarkers.forEach(m => m.remove());
+  stationMarkers = [];
+  LINE_STATIONS.forEach(s => {
+    const isTiming = MTP_TIMING_POINTS.has(s);
+    const size = isTiming ? 11 : 8;
+    const icon = L.divIcon({
+      className: 'station-dot' + (isTiming ? ' timing' : ''),
+      iconSize: [size, size],
+      iconAnchor: [size/2, size/2],
+    });
+    const marker = L.marker(stationLatLon(s), { icon })
+      .bindTooltip(s, { direction: 'top', opacity: 0.9 })
+      .addTo(map);
+    stationMarkers.push(marker);
+  });
+}
+
+let trackPolyline = null;
+
+function drawTrackPolyline(map) {
+  if (trackPolyline) { trackPolyline.remove(); trackPolyline = null; }
+  const coords = (trackGeom && trackGeom.points.length)
+    ? trackGeom.points
+    : LINE_STATIONS.map(s => STATION_COORDS[s]);
+  const realGeom = !!(trackGeom && trackGeom.points.length);
+  trackPolyline = L.polyline(coords, {
+    color: realGeom ? '#2563eb' : '#1e293b',
+    weight: realGeom ? 4 : 3,
+    opacity: realGeom ? 0.55 : 0.35,
+    dashArray: realGeom ? null : '6,4',
+  }).addTo(map);
+}
+
+function openMap() {
+  document.getElementById('map-overlay').classList.remove('hidden');
+  // Defer init so Leaflet sees actual container size
+  setTimeout(async () => {
+    const map = initMap();
+    map.invalidateSize();
+    setZoomPreset(currentZoomPreset);
+    updateTrainDots();
+    // Load real track geometry (async) and re-draw polyline, station markers,
+    // and train dots — all of which now use the snapped coords.
+    await loadTrackGeometry();
+    drawTrackPolyline(map);
+    placeStationMarkers(map);
+    updateTrainDots();
+    if (mapUpdateInterval) clearInterval(mapUpdateInterval);
+    mapUpdateInterval = setInterval(updateTrainDots, 30000);
+  }, 60);
+}
+
+function closeMap() {
+  // Clear the hash and re-apply the route. We use replaceState (silent — doesn't
+  // fire hashchange) and then call applyRoute() ourselves, so we don't add a
+  // junk entry to browser history but the main view still gets re-shown.
+  if (location.hash === '#/map') {
+    history.replaceState(null, '', location.pathname + location.search);
+  }
+  applyRoute();
+}
+
+let currentZoomPreset = 'adelaide';
+function setZoomPreset(name) {
+  currentZoomPreset = name;
+  if (!mapInstance) return;
+  if (name === 'adelaide') {
+    mapInstance.setView([-34.998, 138.65], 11);
+  } else {
+    mapInstance.fitBounds([STATION_COORDS['Keswick'], STATION_COORDS['Murray Bridge']], { padding: [30, 30] });
+  }
+  document.querySelectorAll('.zoom-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.zoom === name));
+}
+
+function updateTrainDots() {
+  if (!mapInstance || !rawData) return;
+  trainMarkers.forEach(m => m.remove());
+  trainMarkers = [];
+
+  const day = currentDayCode();
+  const todays = (rawData.trains || []).filter(t => t.days?.includes(day));
+  let running = 0;
+  for (const t of todays) {
+    const pos = currentPosition(t, nowMin);
+    if (!pos) continue;
+    running++;
+    const icon = L.divIcon({
+      className: 'train-dot-marker ' + t.direction,
+      iconSize: [16, 16],
+      iconAnchor: [8, 8],
+    });
+    const tooltip = `<strong>${t.train_id}</strong> · ${operatorLabel(t.operator)}<br>` +
+                    `${commodityShort(t.commodity)} · ${t.length_m||'?'} m<br>` +
+                    `<span style="opacity:.7">${pos.from} → ${pos.to}</span>`;
+    const marker = L.marker([pos.lat, pos.lon], { icon })
+      .bindTooltip(tooltip, { direction: 'top', offset: [0,-6] })
+      .addTo(mapInstance);
+    marker.on('click', () => { location.hash = '#/train/' + t.train_id; });
+    trainMarkers.push(marker);
+  }
+  document.getElementById('map-train-count').textContent =
+    running === 0 ? 'No trains running now'
+                  : `${running} train${running === 1 ? '' : 's'} running now`;
+}
+
+document.addEventListener('click', e => {
+  const zb = e.target.closest('.zoom-btn');
+  if (zb) setZoomPreset(zb.dataset.zoom);
+});
+
+// ── Hash router ───────────────────────────────────────────────────
+function parseRoute() {
+  const h = location.hash.replace(/^#\/?/, '');
+  if (!h) return { view: 'main' };
+  if (h === 'map') return { view: 'map' };
+  const m = h.match(/^train\/(.+)$/);
+  if (m) return { view: 'detail', trainId: decodeURIComponent(m[1]) };
+  return { view: 'main' };
+}
+
+function applyRoute() {
+  const r = parseRoute();
+  const main = document.querySelector('main');
+  const detail = document.getElementById('detail-view');
+  const map = document.getElementById('map-overlay');
+
+  main.style.display    = (r.view === 'main')   ? '' : 'none';
+  detail.classList.toggle('hidden', r.view !== 'detail');
+
+  if (r.view === 'map') {
+    openMap();
+  } else {
+    if (!map.classList.contains('hidden')) {
+      map.classList.add('hidden');
+      if (mapUpdateInterval) { clearInterval(mapUpdateInterval); mapUpdateInterval = null; }
+    }
+  }
+
+  if (r.view === 'detail') renderDetailView(r.trainId);
+  window.scrollTo(0, 0);
+}
+
+window.addEventListener('hashchange', applyRoute);
+
+// ── Train detail view (#/train/X) ─────────────────────────────────
+function renderDetailView(trainId) {
+  const c = document.getElementById('detail-content');
+  const t = (rawData?.trains || []).find(x => x.train_id === trainId);
+  if (!t) {
+    c.innerHTML = `<div class="detail-card">Train <strong style="font-family:monospace">${trainId}</strong> not found in the current MTP.</div>`;
+    return;
+  }
+
+  // Build full station-by-station timing using interpolation where needed
+  const visible = LINE_STATIONS.filter(s => {
+    if (t.stations?.[s]) return true;
+    if (s in BELAIR_INTERMEDIATE && t.stations?.['Keswick'] && t.stations?.['Belair']) return true;
+    return false;
+  });
+  const timing = visible.map(s => ({ station: s, ...getTimePair(t, s) }))
+    .filter(r => r.tMin !== null)
+    .sort((a, b) => {
+      const dt = a.tMin - b.tMin;
+      if (dt !== 0) return dt;
+      // Tie-break by km in chronological direction (rounded-to-minute ties
+      // happen on the plateau where stations are ~30 sec apart).
+      const ka = STATION_KM[a.station], kb = STATION_KM[b.station];
+      return t.direction === 'outbound' ? ka - kb : kb - ka;
+    });
+
+  // Photo search links — train-specific queries (named service, or class + commodity)
+  const opName = operatorLabel(t.operator);
+  const photoLinks = photoSearchTargets(t);
+
+  const known = knownService(t);
+
+  c.innerHTML = `
+    <div class="detail-card">
+      <div class="detail-header">
+        <span class="train-id">${t.train_id}</span>
+        <span class="tag tag-dir-${t.direction==='inbound'?'in':'out'}">${dirLabel(t.direction)}</span>
+        ${sizeTag(t.length_m)}
+      </div>
+      <div class="detail-meta">
+        <span class="op-chip op-${t.operator}" style="width:10px;height:10px"></span><strong>${opName}</strong>
+        · ${commodityShort(t.commodity)}${scheduleShort(t.schedule) ? ' (' + scheduleShort(t.schedule) + ')' : ''}
+        <br>Runs <strong>${(t.days || []).join(', ')}</strong>
+      </div>
+
+      ${known ? `
+        <div class="overland-card">
+          <div class="badge">Named service</div>
+          <div class="name">${known.name}</div>
+          <div class="desc">${known.desc} <a href="${known.link}" target="_blank" rel="noopener">Journey Beyond ↗</a></div>
+        </div>` : ''}
+
+      <div class="detail-decode">
+        ${trainDetailHtml(t, false)}
+      </div>
+
+      <div class="section-label">Schedule — MTP timing points + estimated intermediates (~)</div>
+      <div class="timing-table">
+        ${timing.map(r => `
+          <div class="timing-row ${r.estimated?'est':''}">
+            <span class="t-time">${r.estimated?'~':''}${displayTime(r.raw)}</span>
+            <span class="t-stn">${r.station}</span>
+            <span class="t-km">${STATION_KM[r.station]?.toFixed(1)} km</span>
+          </div>`).join('')}
+      </div>
+
+      <div class="section-label" style="margin-top:18px">See photos &amp; video</div>
+      <div class="photo-links">
+        ${photoLinks.map(([label, url]) => `<a href="${url}" target="_blank" rel="noopener">${label}</a>`).join(' · ')}
+        <div style="font-size:.7rem;color:var(--muted);margin-top:6px;line-height:1.5">
+          ${known
+            ? `Search query: <strong>${known.name}</strong>. Named-service searches surface lots of real photos.`
+            : `Search query targets locomotive class + commodity (the way railfans actually tag photos), not the ARTC train number which never appears in captions.`}
+        </div>
+      </div>
+
+      <div class="permalink-hint">
+        Permalink: <code>#/train/${t.train_id}</code> · also reachable from the map view by clicking the train's dot.
+      </div>
+    </div>
+  `;
+}
+
+refresh().then(applyRoute);
+// Hourly refresh of the data (catches MTP updates, day rollovers).
+// Per-minute UI ticking happens inside updateClock(), which is cheaper.
+setInterval(() => { refresh(); }, 3600000);
+</script>
+</body>
+</html>

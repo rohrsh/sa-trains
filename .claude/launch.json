@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "sane-trains",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["app.py"],
+      "port": 5001
+    },
+    {
+      "name": "sane-trains-static",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8082"],
+      "port": 8082
+    }
+  ]
+}

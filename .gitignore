@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+.env
+venv/
+.venv/
+*.egg-info/
+
+# MTP PDFs — downloaded on demand by fetch_artc.py — copyrighted ARTC documents
+*.pdf
+
+# macOS
+.DS_Store
+.AppleDouble
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# .claude/ is intentionally NOT fully ignored — launch.json there is useful
+# for local dev. But settings.local.json is per-user (permission allowlist,
+# hardcoded paths) and should never be committed.
+.claude/settings.local.json

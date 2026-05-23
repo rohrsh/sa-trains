@@ -1,0 +1,1383 @@
+{
+  "source": "ARTC Master Train Plan \u2014 VIC-SA 300 / VIC-SA 350 (effective 2026-04-19)",
+  "disclaimer": "Scheduled paths from ARTC MTP. Trains can be cancelled, late, or altered. Verify at artc.com.au.",
+  "last_updated": "2026-05-23",
+  "mtp_effective": "2026-04-19",
+  "stations_order": [
+    "Murray Bridge",
+    "Balhannah",
+    "Mt Lofty",
+    "Belair",
+    "Keswick"
+  ],
+  "trains": [
+    {
+      "train_id": "2MA8",
+      "table": "VIC-SA-300",
+      "direction": "inbound",
+      "length_m": 250,
+      "schedule": "PAS",
+      "commodity": "Passenger",
+      "operator": "GSR",
+      "days": [
+        "MON"
+      ],
+      "stations": {
+        "Murray Bridge": "16:10",
+        "Monarto South": "16:23",
+        "Callington": "16:31",
+        "Petwood": "16:39",
+        "Mt Barker Junction": "16:53",
+        "Balhannah": "16:58",
+        "Ambleside": "17:02",
+        "Mt Lofty": "17:17",
+        "Belair": "17:30",
+        "Keswick": "17:55"
+      }
+    },
+    {
+      "train_id": "2MA5",
+      "table": "VIC-SA-300",
+      "direction": "inbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "PNT",
+      "days": [
+        "MON"
+      ],
+      "stations": {
+        "Murray Bridge": "02:27",
+        "Monarto South": "02:41",
+        "Callington": "02:54",
+        "Petwood": "03:06",
+        "Mt Barker Junction": "03:26",
+        "Balhannah": "03:32",
+        "Ambleside": "03:37",
+        "Mt Lofty": "03:58",
+        "Belair": "04:12",
+        "Keswick": "04:44"
+      }
+    },
+    {
+      "train_id": "2MP9",
+      "table": "VIC-SA-300",
+      "direction": "inbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "SCT",
+      "days": [
+        "TUE"
+      ],
+      "stations": {
+        "Murray Bridge": "05:27",
+        "Monarto South": "05:41",
+        "Callington": "05:54",
+        "Petwood": "06:06",
+        "Mt Barker Junction": "06:26",
+        "Balhannah": "06:32",
+        "Ambleside": "06:37",
+        "Mt Lofty": "06:58",
+        "Belair": "07:12",
+        "Keswick": "07:44"
+      }
+    },
+    {
+      "train_id": "2MP5",
+      "table": "VIC-SA-300",
+      "direction": "inbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "PNT",
+      "days": [
+        "TUE"
+      ],
+      "stations": {
+        "Murray Bridge": "06:47",
+        "Monarto South": "07:01",
+        "Callington": "07:14",
+        "Petwood": "07:26",
+        "Mt Barker Junction": "07:46",
+        "Balhannah": "07:52",
+        "Ambleside": "07:57",
+        "Mt Lofty": "08:18",
+        "Belair": "08:32",
+        "Keswick": "09:04"
+      }
+    },
+    {
+      "train_id": "3MP1",
+      "table": "VIC-SA-300",
+      "direction": "inbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "GWI",
+      "days": [
+        "TUE"
+      ],
+      "stations": {
+        "Murray Bridge": "22:56",
+        "Monarto South": "23:10",
+        "Callington": "23:23",
+        "Petwood": "23:35",
+        "Mt Barker Junction": "23:55",
+        "Balhannah": "+00:01",
+        "Ambleside": "+00:06",
+        "Mt Lofty": "+00:27",
+        "Belair": "+02:26",
+        "Keswick": "+02:59"
+      }
+    },
+    {
+      "train_id": "3MA5",
+      "table": "VIC-SA-300",
+      "direction": "inbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "PNT",
+      "days": [
+        "TUE"
+      ],
+      "stations": {
+        "Murray Bridge": "03:18",
+        "Monarto South": "04:00",
+        "Callington": "04:14",
+        "Petwood": "04:26",
+        "Mt Barker Junction": "04:46",
+        "Balhannah": "04:52",
+        "Ambleside": "04:57",
+        "Mt Lofty": "05:18",
+        "Belair": "05:32",
+        "Keswick": "06:04"
+      }
+    },
+    {
+      "train_id": "3MP9",
+      "table": "VIC-SA-300",
+      "direction": "inbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "SCT",
+      "days": [
+        "WED"
+      ],
+      "stations": {
+        "Murray Bridge": "04:39",
+        "Monarto South": "04:53",
+        "Callington": "05:06",
+        "Petwood": "05:18",
+        "Mt Barker Junction": "05:38",
+        "Balhannah": "05:44",
+        "Ambleside": "05:49",
+        "Mt Lofty": "06:10",
+        "Belair": "06:24",
+        "Keswick": "06:56"
+      }
+    },
+    {
+      "train_id": "3MP5",
+      "table": "VIC-SA-300",
+      "direction": "inbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "PNT",
+      "days": [
+        "WED"
+      ],
+      "stations": {
+        "Murray Bridge": "07:03",
+        "Monarto South": "07:17",
+        "Callington": "07:30",
+        "Petwood": "07:42",
+        "Mt Barker Junction": "08:02",
+        "Balhannah": "08:08",
+        "Ambleside": "08:13",
+        "Mt Lofty": "08:34",
+        "Belair": "08:48",
+        "Keswick": "09:20"
+      }
+    },
+    {
+      "train_id": "4MP7",
+      "table": "VIC-SA-300",
+      "direction": "inbound",
+      "length_m": 1500,
+      "schedule": "TRL",
+      "commodity": "Intermodal",
+      "operator": "PNT",
+      "days": [
+        "WED"
+      ],
+      "stations": {
+        "Murray Bridge": "08:46",
+        "Monarto South": "08:59",
+        "Callington": "09:08",
+        "Petwood": "09:17",
+        "Mt Barker Junction": "09:32",
+        "Balhannah": "09:38",
+        "Ambleside": "09:42",
+        "Mt Lofty": "09:59",
+        "Belair": "10:12",
+        "Keswick": "10:32"
+      }
+    },
+    {
+      "train_id": "4MA5",
+      "table": "VIC-SA-300",
+      "direction": "inbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "PNT",
+      "days": [
+        "WED"
+      ],
+      "stations": {
+        "Murray Bridge": "03:28",
+        "Monarto South": "03:42",
+        "Callington": "03:55",
+        "Petwood": "04:07",
+        "Mt Barker Junction": "04:27",
+        "Balhannah": "04:33",
+        "Ambleside": "04:38",
+        "Mt Lofty": "04:59",
+        "Belair": "05:13",
+        "Keswick": "05:45"
+      }
+    },
+    {
+      "train_id": "4MA9",
+      "table": "VIC-SA-300",
+      "direction": "inbound",
+      "length_m": 1800,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "SCT",
+      "days": [
+        "THU"
+      ],
+      "stations": {
+        "Murray Bridge": "04:03",
+        "Monarto South": "04:17",
+        "Callington": "04:30",
+        "Petwood": "04:42",
+        "Mt Barker Junction": "05:02",
+        "Balhannah": "05:08",
+        "Ambleside": "05:13",
+        "Mt Lofty": "05:34",
+        "Belair": "06:04",
+        "Keswick": "06:37"
+      }
+    },
+    {
+      "train_id": "4MP5",
+      "table": "VIC-SA-300",
+      "direction": "inbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "PNT",
+      "days": [
+        "THU"
+      ],
+      "stations": {
+        "Murray Bridge": "06:58",
+        "Monarto South": "07:12",
+        "Callington": "07:25",
+        "Petwood": "07:37",
+        "Mt Barker Junction": "07:57",
+        "Balhannah": "08:03",
+        "Ambleside": "08:08",
+        "Mt Lofty": "08:29",
+        "Belair": "08:43",
+        "Keswick": "09:15"
+      }
+    },
+    {
+      "train_id": "4MP1",
+      "table": "VIC-SA-300",
+      "direction": "inbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "GWI",
+      "days": [
+        "THU"
+      ],
+      "stations": {
+        "Murray Bridge": "07:25",
+        "Monarto South": "07:39",
+        "Callington": "08:50",
+        "Petwood": "09:03",
+        "Mt Barker Junction": "09:39",
+        "Balhannah": "09:46",
+        "Ambleside": "09:51",
+        "Mt Lofty": "10:12",
+        "Belair": "11:09",
+        "Keswick": "11:42"
+      }
+    },
+    {
+      "train_id": "5MA5",
+      "table": "VIC-SA-300",
+      "direction": "inbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "PNT",
+      "days": [
+        "THU"
+      ],
+      "stations": {
+        "Murray Bridge": "03:57",
+        "Monarto South": "04:11",
+        "Callington": "04:24",
+        "Petwood": "04:36",
+        "Mt Barker Junction": "04:56",
+        "Balhannah": "05:02",
+        "Ambleside": "05:07",
+        "Mt Lofty": "05:28",
+        "Belair": "05:42",
+        "Keswick": "06:14"
+      }
+    },
+    {
+      "train_id": "5MP9",
+      "table": "VIC-SA-300",
+      "direction": "inbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "SCT",
+      "days": [
+        "FRI"
+      ],
+      "stations": {
+        "Murray Bridge": "04:19",
+        "Monarto South": "04:33",
+        "Callington": "04:46",
+        "Petwood": "04:58",
+        "Mt Barker Junction": "05:18",
+        "Balhannah": "05:24",
+        "Ambleside": "05:29",
+        "Mt Lofty": "05:50",
+        "Belair": "06:04",
+        "Keswick": "06:36"
+      }
+    },
+    {
+      "train_id": "5MP5",
+      "table": "VIC-SA-300",
+      "direction": "inbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "PNT",
+      "days": [
+        "FRI"
+      ],
+      "stations": {
+        "Murray Bridge": "06:50",
+        "Monarto South": "07:04",
+        "Callington": "07:17",
+        "Petwood": "07:29",
+        "Mt Barker Junction": "07:49",
+        "Balhannah": "07:55",
+        "Ambleside": "08:00",
+        "Mt Lofty": "08:21",
+        "Belair": "08:35",
+        "Keswick": "09:07"
+      }
+    },
+    {
+      "train_id": "5MP1",
+      "table": "VIC-SA-300",
+      "direction": "inbound",
+      "length_m": 1800,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "GWI",
+      "days": [
+        "FRI"
+      ],
+      "stations": {
+        "Murray Bridge": "08:42",
+        "Monarto South": "08:56",
+        "Callington": "09:09",
+        "Petwood": "09:21",
+        "Mt Barker Junction": "09:41",
+        "Balhannah": "09:47",
+        "Ambleside": "10:25",
+        "Mt Lofty": "10:47",
+        "Belair": "11:01",
+        "Keswick": "11:33"
+      }
+    },
+    {
+      "train_id": "6MA8",
+      "table": "VIC-SA-300",
+      "direction": "inbound",
+      "length_m": 250,
+      "schedule": "PAS",
+      "commodity": "Passenger",
+      "operator": "GSR",
+      "days": [
+        "FRI"
+      ],
+      "stations": {
+        "Murray Bridge": "16:18",
+        "Monarto South": "16:31",
+        "Callington": "16:39",
+        "Petwood": "16:47",
+        "Mt Barker Junction": "17:01",
+        "Balhannah": "17:06",
+        "Ambleside": "17:10",
+        "Mt Lofty": "17:25",
+        "Belair": "17:37",
+        "Keswick": "18:00"
+      }
+    },
+    {
+      "train_id": "6MP4",
+      "table": "VIC-SA-300",
+      "direction": "inbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "PNT",
+      "days": [
+        "FRI"
+      ],
+      "stations": {
+        "Murray Bridge": "23:06",
+        "Monarto South": "23:20",
+        "Callington": "23:33",
+        "Petwood": "23:45",
+        "Mt Barker Junction": "+00:05",
+        "Balhannah": "+00:11",
+        "Ambleside": "+00:16",
+        "Mt Lofty": "+00:37",
+        "Belair": "+00:51",
+        "Keswick": "+01:23"
+      }
+    },
+    {
+      "train_id": "6MP9",
+      "table": "VIC-SA-300",
+      "direction": "inbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "SCT",
+      "days": [
+        "SAT"
+      ],
+      "stations": {
+        "Murray Bridge": "03:39",
+        "Monarto South": "03:53",
+        "Callington": "04:06",
+        "Petwood": "04:18",
+        "Mt Barker Junction": "04:38",
+        "Balhannah": "04:44",
+        "Ambleside": "04:49",
+        "Mt Lofty": "05:10",
+        "Belair": "05:24",
+        "Keswick": "05:56"
+      }
+    },
+    {
+      "train_id": "6MP1",
+      "table": "VIC-SA-300",
+      "direction": "inbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "GWI",
+      "days": [
+        "SAT"
+      ],
+      "stations": {
+        "Murray Bridge": "05:53",
+        "Monarto South": "06:07",
+        "Callington": "06:41",
+        "Petwood": "06:54",
+        "Mt Barker Junction": "07:14",
+        "Balhannah": "07:20",
+        "Ambleside": "07:25",
+        "Mt Lofty": "07:46",
+        "Belair": "08:00",
+        "Keswick": "08:32"
+      }
+    },
+    {
+      "train_id": "6MP5",
+      "table": "VIC-SA-300",
+      "direction": "inbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "PNT",
+      "days": [
+        "SAT"
+      ],
+      "stations": {
+        "Murray Bridge": "06:48",
+        "Monarto South": "07:02",
+        "Callington": "07:15",
+        "Petwood": "07:27",
+        "Mt Barker Junction": "07:47",
+        "Balhannah": "07:53",
+        "Ambleside": "07:58",
+        "Mt Lofty": "08:19",
+        "Belair": "08:33",
+        "Keswick": "09:05"
+      }
+    },
+    {
+      "train_id": "7MP7",
+      "table": "VIC-SA-300",
+      "direction": "inbound",
+      "length_m": 1500,
+      "schedule": "TRL",
+      "commodity": "Intermodal",
+      "operator": "PNT",
+      "days": [
+        "SAT"
+      ],
+      "stations": {
+        "Murray Bridge": "09:12",
+        "Monarto South": "09:25",
+        "Callington": "09:34",
+        "Petwood": "09:43",
+        "Mt Barker Junction": "09:58",
+        "Balhannah": "10:04",
+        "Ambleside": "10:08",
+        "Mt Lofty": "10:25",
+        "Belair": "10:38",
+        "Keswick": "10:58"
+      }
+    },
+    {
+      "train_id": "7MA9",
+      "table": "VIC-SA-300",
+      "direction": "inbound",
+      "length_m": 1800,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "SCT",
+      "days": [
+        "SAT"
+      ],
+      "stations": {
+        "Murray Bridge": "02:08",
+        "Monarto South": "02:22",
+        "Callington": "02:35",
+        "Petwood": "02:47",
+        "Mt Barker Junction": "03:47",
+        "Balhannah": "03:54",
+        "Ambleside": "03:59",
+        "Mt Lofty": "04:20",
+        "Belair": "04:34",
+        "Keswick": "05:06"
+      }
+    },
+    {
+      "train_id": "7MP5",
+      "table": "VIC-SA-300",
+      "direction": "inbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "PNT",
+      "days": [
+        "SUN"
+      ],
+      "stations": {
+        "Murray Bridge": "03:46",
+        "Monarto South": "04:00",
+        "Callington": "04:13",
+        "Petwood": "04:25",
+        "Mt Barker Junction": "04:45",
+        "Balhannah": "04:51",
+        "Ambleside": "04:56",
+        "Mt Lofty": "05:17",
+        "Belair": "05:31",
+        "Keswick": "06:03"
+      }
+    },
+    {
+      "train_id": "7MP1",
+      "table": "VIC-SA-300",
+      "direction": "inbound",
+      "length_m": 1800,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "GWI",
+      "days": [
+        "SUN"
+      ],
+      "stations": {
+        "Murray Bridge": "09:55",
+        "Monarto South": "10:09",
+        "Callington": "11:01",
+        "Petwood": "11:14",
+        "Mt Barker Junction": "11:34",
+        "Balhannah": "11:40",
+        "Ambleside": "11:45",
+        "Mt Lofty": "12:06",
+        "Belair": "12:20",
+        "Keswick": "12:52"
+      }
+    },
+    {
+      "train_id": "1MP9",
+      "table": "VIC-SA-300",
+      "direction": "inbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "SCT",
+      "days": [
+        "SUN"
+      ],
+      "stations": {
+        "Murray Bridge": "02:11",
+        "Monarto South": "02:25",
+        "Callington": "02:38",
+        "Petwood": "02:50",
+        "Mt Barker Junction": "03:10",
+        "Balhannah": "03:16",
+        "Ambleside": "03:21",
+        "Mt Lofty": "03:42",
+        "Belair": "03:56",
+        "Keswick": "04:28"
+      }
+    },
+    {
+      "train_id": "1MP2",
+      "table": "VIC-SA-300",
+      "direction": "inbound",
+      "length_m": 1500,
+      "schedule": "EXP",
+      "commodity": "Steel",
+      "operator": "PNT",
+      "days": [
+        "SUN"
+      ],
+      "stations": {
+        "Murray Bridge": "03:56",
+        "Monarto South": "04:11",
+        "Callington": "04:25",
+        "Petwood": "04:39",
+        "Mt Barker Junction": "05:00",
+        "Balhannah": "05:07",
+        "Ambleside": "05:13",
+        "Mt Lofty": "05:35",
+        "Belair": "05:50",
+        "Keswick": "06:20"
+      }
+    },
+    {
+      "train_id": "6PM6",
+      "table": "VIC-SA-350",
+      "direction": "outbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "PNT",
+      "days": [
+        "MON"
+      ],
+      "stations": {
+        "Keswick": "06:33",
+        "Belair": "07:02",
+        "Mt Lofty": "07:17",
+        "Ambleside": "07:32",
+        "Balhannah": "07:36",
+        "Mt Barker Junction": "07:41",
+        "Petwood": "07:55",
+        "Callington": "08:04",
+        "Monarto South": "08:14",
+        "Murray Bridge": "08:26"
+      }
+    },
+    {
+      "train_id": "6PM1",
+      "table": "VIC-SA-350",
+      "direction": "outbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "GWI",
+      "days": [
+        "MON"
+      ],
+      "stations": {
+        "Keswick": "10:43",
+        "Belair": "11:12",
+        "Mt Lofty": "11:27",
+        "Ambleside": "11:42",
+        "Balhannah": "11:46",
+        "Mt Barker Junction": "11:51",
+        "Petwood": "12:05",
+        "Callington": "12:14",
+        "Monarto South": "12:24",
+        "Murray Bridge": "12:36"
+      }
+    },
+    {
+      "train_id": "2AM5",
+      "table": "VIC-SA-350",
+      "direction": "outbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "PNT",
+      "days": [
+        "MON"
+      ],
+      "stations": {
+        "Keswick": "19:10",
+        "Belair": "19:39",
+        "Mt Lofty": "19:54",
+        "Ambleside": "20:09",
+        "Balhannah": "20:13",
+        "Mt Barker Junction": "20:18",
+        "Petwood": "20:32",
+        "Callington": "20:41",
+        "Monarto South": "20:51",
+        "Murray Bridge": "21:03"
+      }
+    },
+    {
+      "train_id": "3AM9",
+      "table": "VIC-SA-350",
+      "direction": "outbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "SCT",
+      "days": [
+        "TUE"
+      ],
+      "stations": {
+        "Keswick": "07:56",
+        "Belair": "08:50",
+        "Mt Lofty": "09:06",
+        "Ambleside": "09:21",
+        "Balhannah": "09:25",
+        "Mt Barker Junction": "09:30",
+        "Petwood": "09:44",
+        "Callington": "09:53",
+        "Monarto South": "10:04",
+        "Murray Bridge": "10:16"
+      }
+    },
+    {
+      "train_id": "7PM5",
+      "table": "VIC-SA-350",
+      "direction": "outbound",
+      "length_m": 1500,
+      "schedule": "EXP",
+      "commodity": "Intermodal",
+      "operator": "PNT",
+      "days": [
+        "TUE"
+      ],
+      "stations": {
+        "Keswick": "09:18",
+        "Belair": "09:47",
+        "Mt Lofty": "10:03",
+        "Ambleside": "10:20",
+        "Balhannah": "10:24",
+        "Mt Barker Junction": "10:30",
+        "Petwood": "10:45",
+        "Callington": "10:56",
+        "Monarto South": "11:07",
+        "Murray Bridge": "11:21"
+      }
+    },
+    {
+      "train_id": "1PM1",
+      "table": "VIC-SA-350",
+      "direction": "outbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "GWI",
+      "days": [
+        "TUE"
+      ],
+      "stations": {
+        "Keswick": "11:38",
+        "Belair": "12:07",
+        "Mt Lofty": "12:22",
+        "Ambleside": "12:37",
+        "Balhannah": "12:41",
+        "Mt Barker Junction": "12:46",
+        "Petwood": "13:00",
+        "Callington": "13:09",
+        "Monarto South": "13:19",
+        "Murray Bridge": "13:31"
+      }
+    },
+    {
+      "train_id": "3AM5",
+      "table": "VIC-SA-350",
+      "direction": "outbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "PNT",
+      "days": [
+        "TUE"
+      ],
+      "stations": {
+        "Keswick": "19:00",
+        "Belair": "19:29",
+        "Mt Lofty": "19:44",
+        "Ambleside": "19:59",
+        "Balhannah": "20:03",
+        "Mt Barker Junction": "20:08",
+        "Petwood": "20:22",
+        "Callington": "20:31",
+        "Monarto South": "20:41",
+        "Murray Bridge": "20:53"
+      }
+    },
+    {
+      "train_id": "1PM9",
+      "table": "VIC-SA-350",
+      "direction": "outbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "SCT",
+      "days": [
+        "WED"
+      ],
+      "stations": {
+        "Keswick": "01:06",
+        "Belair": "01:35",
+        "Mt Lofty": "01:50",
+        "Ambleside": "02:05",
+        "Balhannah": "02:09",
+        "Mt Barker Junction": "02:14",
+        "Petwood": "02:28",
+        "Callington": "02:37",
+        "Monarto South": "02:47",
+        "Murray Bridge": "02:59"
+      }
+    },
+    {
+      "train_id": "1PM5",
+      "table": "VIC-SA-350",
+      "direction": "outbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "PNT",
+      "days": [
+        "WED"
+      ],
+      "stations": {
+        "Keswick": "07:08",
+        "Belair": "07:37",
+        "Mt Lofty": "07:52",
+        "Ambleside": "08:25",
+        "Balhannah": "08:30",
+        "Mt Barker Junction": "08:35",
+        "Petwood": "08:49",
+        "Callington": "09:18",
+        "Monarto South": "09:29",
+        "Murray Bridge": "09:41"
+      }
+    },
+    {
+      "train_id": "2PM1",
+      "table": "VIC-SA-350",
+      "direction": "outbound",
+      "length_m": 1800,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "GWI",
+      "days": [
+        "WED"
+      ],
+      "stations": {
+        "Keswick": "10:44",
+        "Belair": "11:13",
+        "Mt Lofty": "11:28",
+        "Ambleside": "11:43",
+        "Balhannah": "11:47",
+        "Mt Barker Junction": "11:52",
+        "Petwood": "12:06",
+        "Callington": "12:15",
+        "Monarto South": "12:25",
+        "Murray Bridge": "12:37"
+      }
+    },
+    {
+      "train_id": "4AM5",
+      "table": "VIC-SA-350",
+      "direction": "outbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "PNT",
+      "days": [
+        "WED"
+      ],
+      "stations": {
+        "Keswick": "19:00",
+        "Belair": "19:29",
+        "Mt Lofty": "19:44",
+        "Ambleside": "19:59",
+        "Balhannah": "20:03",
+        "Mt Barker Junction": "20:08",
+        "Petwood": "20:22",
+        "Callington": "20:31",
+        "Monarto South": "20:41",
+        "Murray Bridge": "20:53"
+      }
+    },
+    {
+      "train_id": "2PM9",
+      "table": "VIC-SA-350",
+      "direction": "outbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "SCT",
+      "days": [
+        "WED"
+      ],
+      "stations": {
+        "Keswick": "20:11",
+        "Belair": "20:40",
+        "Mt Lofty": "20:55",
+        "Ambleside": "21:10",
+        "Balhannah": "21:14",
+        "Mt Barker Junction": "21:19",
+        "Petwood": "21:33",
+        "Callington": "21:42",
+        "Monarto South": "21:52",
+        "Murray Bridge": "22:04"
+      }
+    },
+    {
+      "train_id": "5AM8",
+      "table": "VIC-SA-350",
+      "direction": "outbound",
+      "length_m": 250,
+      "schedule": "PAS",
+      "commodity": "Passenger",
+      "operator": "GSR",
+      "days": [
+        "THU"
+      ],
+      "stations": {
+        "Keswick": "07:00",
+        "Belair": "07:24",
+        "Mt Lofty": "07:36",
+        "Ambleside": "08:15",
+        "Balhannah": "08:20",
+        "Mt Barker Junction": "08:24",
+        "Petwood": "08:37",
+        "Callington": "08:46",
+        "Monarto South": "08:55",
+        "Murray Bridge": "09:10"
+      }
+    },
+    {
+      "train_id": "2PM5",
+      "table": "VIC-SA-350",
+      "direction": "outbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "PNT",
+      "days": [
+        "THU"
+      ],
+      "stations": {
+        "Keswick": "07:17",
+        "Belair": "08:50",
+        "Mt Lofty": "09:06",
+        "Ambleside": "09:21",
+        "Balhannah": "09:25",
+        "Mt Barker Junction": "09:30",
+        "Petwood": "09:44",
+        "Callington": "09:53",
+        "Monarto South": "10:03",
+        "Murray Bridge": "10:15"
+      }
+    },
+    {
+      "train_id": "2PM6",
+      "table": "VIC-SA-350",
+      "direction": "outbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "PNT",
+      "days": [
+        "THU"
+      ],
+      "stations": {
+        "Keswick": "10:15",
+        "Belair": "10:44",
+        "Mt Lofty": "10:59",
+        "Ambleside": "11:14",
+        "Balhannah": "11:18",
+        "Mt Barker Junction": "11:23",
+        "Petwood": "11:37",
+        "Callington": "11:46",
+        "Monarto South": "11:56",
+        "Murray Bridge": "12:08"
+      }
+    },
+    {
+      "train_id": "3PM7",
+      "table": "VIC-SA-350",
+      "direction": "outbound",
+      "length_m": 1500,
+      "schedule": "TRL",
+      "commodity": "Intermodal",
+      "operator": "PNT",
+      "days": [
+        "THU"
+      ],
+      "stations": {
+        "Keswick": "13:35",
+        "Belair": "14:00",
+        "Mt Lofty": "14:14",
+        "Ambleside": "14:28",
+        "Balhannah": "14:32",
+        "Mt Barker Junction": "14:36",
+        "Petwood": "14:50",
+        "Callington": "14:58",
+        "Monarto South": "15:07",
+        "Murray Bridge": "15:18"
+      }
+    },
+    {
+      "train_id": "3PM1",
+      "table": "VIC-SA-350",
+      "direction": "outbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "GWI",
+      "days": [
+        "THU"
+      ],
+      "stations": {
+        "Keswick": "16:21",
+        "Belair": "16:50",
+        "Mt Lofty": "17:05",
+        "Ambleside": "17:20",
+        "Balhannah": "17:24",
+        "Mt Barker Junction": "17:29",
+        "Petwood": "17:43",
+        "Callington": "17:52",
+        "Monarto South": "18:02",
+        "Murray Bridge": "18:14"
+      }
+    },
+    {
+      "train_id": "6AM9",
+      "table": "VIC-SA-350",
+      "direction": "outbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "SCT",
+      "days": [
+        "FRI"
+      ],
+      "stations": {
+        "Keswick": "06:50",
+        "Belair": "07:19",
+        "Mt Lofty": "07:34",
+        "Ambleside": "08:11",
+        "Balhannah": "08:16",
+        "Mt Barker Junction": "08:21",
+        "Petwood": "08:35",
+        "Callington": "09:14",
+        "Monarto South": "09:26",
+        "Murray Bridge": "09:38"
+      }
+    },
+    {
+      "train_id": "3PM6",
+      "table": "VIC-SA-350",
+      "direction": "outbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "PNT",
+      "days": [
+        "FRI"
+      ],
+      "stations": {
+        "Keswick": "09:18",
+        "Belair": "09:47",
+        "Mt Lofty": "10:02",
+        "Ambleside": "10:17",
+        "Balhannah": "10:21",
+        "Mt Barker Junction": "10:26",
+        "Petwood": "10:40",
+        "Callington": "11:10",
+        "Monarto South": "11:21",
+        "Murray Bridge": "11:33"
+      }
+    },
+    {
+      "train_id": "4PM1",
+      "table": "VIC-SA-350",
+      "direction": "outbound",
+      "length_m": 1800,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "GWI",
+      "days": [
+        "FRI"
+      ],
+      "stations": {
+        "Keswick": "18:12",
+        "Belair": "18:41",
+        "Mt Lofty": "18:56",
+        "Ambleside": "19:11",
+        "Balhannah": "19:15",
+        "Mt Barker Junction": "19:20",
+        "Petwood": "19:34",
+        "Callington": "19:43",
+        "Monarto South": "19:53",
+        "Murray Bridge": "20:05"
+      }
+    },
+    {
+      "train_id": "6AM5",
+      "table": "VIC-SA-350",
+      "direction": "outbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "PNT",
+      "days": [
+        "FRI"
+      ],
+      "stations": {
+        "Keswick": "19:25",
+        "Belair": "19:54",
+        "Mt Lofty": "20:09",
+        "Ambleside": "20:24",
+        "Balhannah": "20:28",
+        "Mt Barker Junction": "20:33",
+        "Petwood": "20:47",
+        "Callington": "20:56",
+        "Monarto South": "21:06",
+        "Murray Bridge": "21:18"
+      }
+    },
+    {
+      "train_id": "4PM9",
+      "table": "VIC-SA-350",
+      "direction": "outbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "SCT",
+      "days": [
+        "SAT"
+      ],
+      "stations": {
+        "Keswick": "03:21",
+        "Belair": "03:50",
+        "Mt Lofty": "04:05",
+        "Ambleside": "04:20",
+        "Balhannah": "04:24",
+        "Mt Barker Junction": "04:45",
+        "Petwood": "05:00",
+        "Callington": "05:09",
+        "Monarto South": "05:19",
+        "Murray Bridge": "05:31"
+      }
+    },
+    {
+      "train_id": "4PM4",
+      "table": "VIC-SA-350",
+      "direction": "outbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "PNT",
+      "days": [
+        "SAT"
+      ],
+      "stations": {
+        "Keswick": "07:24",
+        "Belair": "08:39",
+        "Mt Lofty": "08:55",
+        "Ambleside": "09:10",
+        "Balhannah": "09:14",
+        "Mt Barker Junction": "10:05",
+        "Petwood": "10:20",
+        "Callington": "10:29",
+        "Monarto South": "10:39",
+        "Murray Bridge": "10:51"
+      }
+    },
+    {
+      "train_id": "7XM4",
+      "table": "VIC-SA-350",
+      "direction": "outbound",
+      "length_m": 1500,
+      "schedule": "EXP",
+      "commodity": "Steel",
+      "operator": "PNT",
+      "days": [
+        "SUN"
+      ],
+      "stations": {
+        "Keswick": "02:05",
+        "Belair": "02:34",
+        "Mt Lofty": "02:50",
+        "Ambleside": "03:07",
+        "Balhannah": "03:11",
+        "Mt Barker Junction": "03:17",
+        "Petwood": "03:32",
+        "Callington": "03:43",
+        "Monarto South": "04:10",
+        "Murray Bridge": "04:25"
+      }
+    },
+    {
+      "train_id": "5PM9",
+      "table": "VIC-SA-350",
+      "direction": "outbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "SCT",
+      "days": [
+        "SUN"
+      ],
+      "stations": {
+        "Keswick": "02:32",
+        "Belair": "03:01",
+        "Mt Lofty": "03:16",
+        "Ambleside": "03:31",
+        "Balhannah": "03:35",
+        "Mt Barker Junction": "03:40",
+        "Petwood": "03:54",
+        "Callington": "04:22",
+        "Monarto South": "04:33",
+        "Murray Bridge": "04:45"
+      }
+    },
+    {
+      "train_id": "1AM8",
+      "table": "VIC-SA-350",
+      "direction": "outbound",
+      "length_m": 250,
+      "schedule": "PAS",
+      "commodity": "Passenger",
+      "operator": "GSR",
+      "days": [
+        "SUN"
+      ],
+      "stations": {
+        "Keswick": "07:50",
+        "Belair": "08:17",
+        "Mt Lofty": "08:28",
+        "Ambleside": "08:41",
+        "Balhannah": "08:45",
+        "Mt Barker Junction": "08:49",
+        "Petwood": "09:02",
+        "Callington": "09:11",
+        "Monarto South": "09:20",
+        "Murray Bridge": "09:35"
+      }
+    },
+    {
+      "train_id": "5PM5",
+      "table": "VIC-SA-350",
+      "direction": "outbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "PNT",
+      "days": [
+        "SUN"
+      ],
+      "stations": {
+        "Keswick": "09:25",
+        "Belair": "09:54",
+        "Mt Lofty": "10:09",
+        "Ambleside": "10:24",
+        "Balhannah": "10:28",
+        "Mt Barker Junction": "10:33",
+        "Petwood": "10:47",
+        "Callington": "10:56",
+        "Monarto South": "11:06",
+        "Murray Bridge": "11:18"
+      }
+    },
+    {
+      "train_id": "6PM7",
+      "table": "VIC-SA-350",
+      "direction": "outbound",
+      "length_m": 1500,
+      "schedule": "TRL",
+      "commodity": "Intermodal",
+      "operator": "PNT",
+      "days": [
+        "SUN"
+      ],
+      "stations": {
+        "Keswick": "15:24",
+        "Belair": "15:49",
+        "Mt Lofty": "16:03",
+        "Ambleside": "16:17",
+        "Balhannah": "16:21",
+        "Mt Barker Junction": "16:25",
+        "Petwood": "16:39",
+        "Callington": "16:47",
+        "Monarto South": "16:56",
+        "Murray Bridge": "17:07"
+      }
+    },
+    {
+      "train_id": "6PM9",
+      "table": "VIC-SA-350",
+      "direction": "outbound",
+      "length_m": 1500,
+      "schedule": "SFR",
+      "commodity": "Intermodal",
+      "operator": "SCT",
+      "days": [
+        "SUN"
+      ],
+      "stations": {
+        "Keswick": "21:22",
+        "Belair": "21:51",
+        "Mt Lofty": "22:05",
+        "Ambleside": "22:20",
+        "Balhannah": "22:24",
+        "Mt Barker Junction": "22:29",
+        "Petwood": "22:42",
+        "Callington": "22:51",
+        "Monarto South": "23:00",
+        "Murray Bridge": "23:12"
+      }
+    }
+  ]
+}
