@@ -15,6 +15,7 @@ import os
 import re
 import sys
 import tempfile
+import time
 from datetime import datetime
 from html.parser import HTMLParser
 
@@ -40,9 +41,25 @@ class _HrefParser(HTMLParser):
                 self.hrefs.append(href)
 
 
+def _get_with_retry(url: str, *, timeout: int = 60, attempts: int = 3) -> requests.Response:
+    """GET with bounded retries — ARTC's site occasionally times out under load."""
+    last_exc: Exception | None = None
+    for i in range(1, attempts + 1):
+        try:
+            r = requests.get(url, headers=HEADERS, timeout=timeout)
+            r.raise_for_status()
+            return r
+        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as exc:
+            last_exc = exc
+            if i < attempts:
+                wait = 5 * i   # 5s, 10s
+                print(f"  attempt {i}/{attempts} failed ({type(exc).__name__}); retrying in {wait}s…")
+                time.sleep(wait)
+    raise RuntimeError(f"giving up on {url} after {attempts} attempts") from last_exc
+
+
 def _get_hrefs(url: str) -> list[str]:
-    r = requests.get(url, headers=HEADERS, timeout=20)
-    r.raise_for_status()
+    r = _get_with_retry(url)
     p = _HrefParser()
     p.feed(r.text)
     return p.hrefs
@@ -84,8 +101,7 @@ def find_pdf_links(mtp_page_url: str) -> dict[str, str]:
 
 def download_pdf(url: str) -> str:
     """Download a PDF to a temp file and return the path."""
-    r = requests.get(url, headers=HEADERS, timeout=60)
-    r.raise_for_status()
+    r = _get_with_retry(url, timeout=120)
     suffix = os.path.basename(url)
     tmp = tempfile.NamedTemporaryFile(suffix=f"_{suffix}", delete=False)
     tmp.write(r.content)
